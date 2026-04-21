@@ -157,5 +157,23 @@
 <script src="js/questions.js"></script>
 <script src="js/questions_extra.js"></script>
 <script src="js/exam.js"></script>
+<script>
+  // ===== Service Worker Registration =====
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(reg => {
+        console.log('[SW] Registered on exam page');
+        // Pastikan SW aktif sebelum ujian memulai sinyal
+        if (reg.installing) {
+          reg.installing.addEventListener('statechange', () => {
+            if (reg.installing?.state === 'activated') {
+              console.log('[SW] Activated dan siap memblokir jaringan');
+            }
+          });
+        }
+      })
+      .catch(err => console.warn('[SW] Registration failed:', err));
+  }
+</script>
 </body>
 </html>

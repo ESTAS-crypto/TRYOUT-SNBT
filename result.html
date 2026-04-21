@@ -222,5 +222,18 @@
 <script src="js/questions_extra.js"></script>
 <script src="js/passgrade.js"></script>
 <script src="js/result.js"></script>
+<script>
+  // ===== Service Worker Registration =====
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(() => {
+        // Kirim EXAM_END untuk memastikan jaringan tidak terblokir di halaman hasil
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage('EXAM_END');
+        }
+      })
+      .catch(err => console.warn('[SW] Registration failed:', err));
+  }
+</script>
 </body>
 </html>

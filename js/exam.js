@@ -139,6 +139,10 @@ function startExam() {
   startTimers();
   renderQuestion();
   saveState();
+
+  // Beritahu Service Worker: mode ujian aktif → blokir semua request eksternal
+  notifyServiceWorker('EXAM_START');
+  showOfflineBadge(true);
 }
 
 // ===== Fullscreen =====
@@ -557,6 +561,10 @@ window.finishExam = function() {
   state.examFinished = true;
   clearInterval(state.timerInterval);
 
+  // Beritahu Service Worker: ujian selesai → izinkan internet kembali
+  notifyServiceWorker('EXAM_END');
+  showOfflineBadge(false);
+
   // Save final results
   saveResults();
   saveState();
@@ -622,4 +630,37 @@ function showToast(message, type = 'info', duration = 3500) {
 function escapeHtml(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== Service Worker Messaging =====
+function notifyServiceWorker(message) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage(message);
+  }
+}
+
+// ===== Offline Badge Indicator =====
+function showOfflineBadge(active) {
+  let badge = document.getElementById('offline-mode-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'offline-mode-badge';
+    badge.style.cssText = [
+      'position:fixed','bottom:16px','left:50%','transform:translateX(-50%)',
+      'background:rgba(16,185,129,0.15)','border:1px solid rgba(16,185,129,0.4)',
+      'color:#34d399','padding:6px 16px','border-radius:30px',
+      'font-size:0.75rem','font-weight:700','letter-spacing:0.05em',
+      'z-index:9999','backdrop-filter:blur(8px)',
+      'transition:all 0.4s ease','display:flex','align-items:center','gap:6px',
+    ].join(';');
+    document.body.appendChild(badge);
+  }
+  if (active) {
+    badge.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:#34d399;display:inline-block;animation:blink 1.5s infinite"></span> Mode Ujian — Jaringan Diblokir';
+    badge.style.display = 'flex';
+    badge.style.opacity = '1';
+  } else {
+    badge.style.opacity = '0';
+    setTimeout(() => badge.remove(), 400);
+  }
 }
