@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasil Tryout — TryoutSNBT Pro</title>
+  <meta name="description" content="Lihat skor SNBT, analisis mendalam, dan prediksi peluang masuk universitas favoritmu.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/result.css">
+  <!-- Chart.js for radar chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    @media print {
+      .result-header .result-actions,
+      .result-tabs,
+      #tab-review, #tab-leaderboard,
+      .no-print { display: none !important; }
+      body { background: white; color: black; }
+      .score-hero { background: #f5f5f5; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== RESULT PAGE ===== -->
+<div class="result-page">
+
+  <!-- Header -->
+  <header class="result-header">
+    <div class="result-logo">
+      <div class="result-logo-icon">📝</div>
+      <span>TryoutSNBT <span class="gradient-text">Pro</span></span>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-secondary btn-sm" onclick="printResult()">🖨️ Cetak</button>
+      <button class="btn btn-primary btn-sm" onclick="retryExam()">🔄 Tryout Ulang</button>
+    </div>
+  </header>
+
+  <!-- ===== SCORE HERO ===== -->
+  <section class="score-hero">
+    <div class="score-hero-content">
+      <p class="participant-name-display">Hasil untuk: <strong id="participant-display-name">—</strong></p>
+      <p class="score-label">Total Skor SNBT</p>
+      <h1 id="total-score-display" class="gradient-text" style="font-size:clamp(4rem,10vw,7rem);letter-spacing:-0.03em;">—</h1>
+      <p style="color:var(--text-muted);font-size:0.8125rem;">Skala 300–700 (Simulasi SNBT)</p>
+      <div id="score-grade" class="score-grade">— Menghitung...</div>
+
+      <div class="exam-summary-pills">
+        <div class="summary-pill">✅ Benar: <span id="pill-correct">—</span></div>
+        <div class="summary-pill">❌ Salah: <span id="pill-wrong">—</span></div>
+        <div class="summary-pill">⭕ Kosong: <span id="pill-unanswered">—</span></div>
+        <div class="summary-pill">⏱️ Durasi: <span id="pill-duration">—</span></div>
+        <div class="summary-pill">⚠️ Pelanggaran: <span id="pill-violations">—</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RESULT CONTAINER ===== -->
+  <div class="result-container">
+
+    <!-- Tabs -->
+    <div class="result-tabs">
+      <button class="result-tab active" data-tab="tab-scores">📊 Skor & Analisis</button>
+      <button class="result-tab" data-tab="tab-prediction">🏛️ Prediksi PTN</button>
+      <button class="result-tab" data-tab="tab-review">📖 Review Soal</button>
+      <button class="result-tab" data-tab="tab-leaderboard">🏆 Leaderboard</button>
+    </div>
+
+    <!-- ===== TAB: SCORES & ANALYSIS ===== -->
+    <div class="tab-panel active" id="tab-scores">
+
+      <!-- Subtest Scores -->
+      <div class="result-section">
+        <div class="result-section-header">
+          <div class="result-section-icon" style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);">📊</div>
+          <h3 class="result-section-title">Skor Per Subtes</h3>
+        </div>
+        <div class="subtest-grid" id="subtest-scores"></div>
+      </div>
+
+      <!-- Radar Chart -->
+      <div class="result-section">
+        <div class="result-section-header">
+          <div class="result-section-icon" style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.25);">🕸️</div>
+          <h3 class="result-section-title">Profil Kemampuan</h3>
+        </div>
+        <div class="chart-container" style="max-height:380px;">
+          <canvas id="radar-chart" style="max-width:380px;max-height:380px;"></canvas>
+        </div>
+      </div>
+
+      <!-- Strength & Weakness -->
+      <div class="result-section">
+        <div class="result-section-header">
+          <div class="result-section-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);">🔍</div>
+          <h3 class="result-section-title">Kelebihan & Kelemahan</h3>
+        </div>
+        <div class="analysis-grid">
+          <div class="analysis-card strength">
+            <h4 style="color:var(--success);">💪 3 Kekuatan Terbaikmu</h4>
+            <div id="strength-list"></div>
+            <div id="strength-tip" class="analysis-tip"></div>
+          </div>
+          <div class="analysis-card weakness">
+            <h4 style="color:var(--danger);">🎯 3 Perlu Ditingkatkan</h4>
+            <div id="weakness-list"></div>
+            <div id="weakness-tip" class="analysis-tip"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end tab-scores -->
+
+    <!-- ===== TAB: UNIVERSITY PREDICTION ===== -->
+    <div class="tab-panel" id="tab-prediction">
+      <div class="result-section">
+        <div class="result-section-header">
+          <div class="result-section-icon" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);">🏛️</div>
+          <h3 class="result-section-title">Prediksi Peluang Masuk PTN</h3>
+        </div>
+
+        <!-- Legend -->
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+          <div class="badge" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:#34d399;">🟢 Aman — Peluang Sangat Tinggi</div>
+          <div class="badge" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#fcd34d;">🟡 Bersaing — Cukup Kompetitif</div>
+          <div class="badge" style="background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);color:#fb923c;">🟠 Ketat — Batas Tipis</div>
+          <div class="badge" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#f87171;">🔴 Perlu Usaha — Ada Gap</div>
+        </div>
+
+        <div class="university-grid" id="university-predictions"></div>
+
+        <div style="margin-top:24px;padding:16px 20px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:12px;">
+          <p style="font-size:0.8125rem;color:var(--text-muted);line-height:1.6;">
+            ℹ️ <strong>Catatan:</strong> Prediksi ini berdasarkan data passing grade rata-rata SNBT/UTBK 2023-2024. 
+            Nilai actual SNBT dapat berbeda. Gunakan ini sebagai referensi awal, bukan patokan pasti. 
+            Terus latihan dan tingkatkan skor untuk memperbesar peluangmu!
+          </p>
+        </div>
+      </div>
+    </div><!-- end tab-prediction -->
+
+    <!-- ===== TAB: REVIEW ===== -->
+    <div class="tab-panel" id="tab-review">
+      <div class="result-section">
+        <div class="result-section-header">
+          <div class="result-section-icon" style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);">📖</div>
+          <h3 class="result-section-title">Review Semua Jawaban</h3>
+        </div>
+
+        <!-- Filters by status -->
+        <div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Filter Status:</div>
+          <div class="review-filters">
+            <button class="review-filter-btn active" data-filter="all">Semua</button>
+            <button class="review-filter-btn" data-filter="correct">✅ Benar</button>
+            <button class="review-filter-btn" data-filter="wrong">❌ Salah</button>
+            <button class="review-filter-btn" data-filter="unanswered">⭕ Kosong</button>
+          </div>
+        </div>
+
+        <!-- Filters by subtest -->
+        <div style="margin-top:12px;">
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Filter Subtes:</div>
+          <div class="review-filters">
+            <button class="review-filter-btn active" data-subfilter="all">Semua</button>
+            <button class="review-filter-btn" data-subfilter="PU">PU</button>
+            <button class="review-filter-btn" data-subfilter="PPU">PPU</button>
+            <button class="review-filter-btn" data-subfilter="PBM">PBM</button>
+            <button class="review-filter-btn" data-subfilter="PK">PK</button>
+            <button class="review-filter-btn" data-subfilter="LBI">LBI</button>
+            <button class="review-filter-btn" data-subfilter="LBE">LBE</button>
+            <button class="review-filter-btn" data-subfilter="PM">PM</button>
+          </div>
+        </div>
+
+        <div style="height:16px;"></div>
+        <div id="review-container"></div>
+      </div>
+    </div><!-- end tab-review -->
+
+    <!-- ===== TAB: LEADERBOARD ===== -->
+    <div class="tab-panel" id="tab-leaderboard">
+      <div class="result-section">
+        <div class="result-section-header">
+          <div class="result-section-icon" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);">🏆</div>
+          <h3 class="result-section-title">Leaderboard — Top 10</h3>
+        </div>
+
+        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-xl);overflow:hidden;">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Nama</th>
+                <th>Skor SNBT</th>
+                <th>Tanggal</th>
+              </tr>
+            </thead>
+            <tbody id="result-leaderboard-body">
+              <tr>
+                <td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px;">Memuat...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:24px;text-align:center;">
+          <button class="btn btn-primary btn-lg" onclick="retryExam()">
+            🔄 Tryout Lagi untuk Skor Lebih Baik
+          </button>
+        </div>
+      </div>
+    </div><!-- end tab-leaderboard -->
+
+  </div><!-- end result-container -->
+
+</div><!-- end result-page -->
+
+<script src="js/questions.js"></script>
+<script src="js/passgrade.js"></script>
+<script src="js/result.js"></script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+// Data Passing Grade SNBT / UTBK berdasarkan rata-rata tahun 2023-2024
+// Skala SNBT: 300-700
+
+const UNIVERSITIES_LIST = [
+  'Universitas Indonesia (UI)',
+  'Universitas Gadjah Mada (UGM)',
+  'Institut Teknologi Bandung (ITB)',
+  'Institut Pertanian Bogor (IPB)',
+  'Universitas Airlangga (UNAIR)',
+  'Universitas Diponegoro (UNDIP)',
+  'Institut Teknologi Sepuluh Nopember (ITS)',
+  'Universitas Padjadjaran (UNPAD)',
+  'Universitas Sebelas Maret (UNS)',
+  'Universitas Brawijaya (UB)',
+  'Universitas Hasanuddin (UNHAS)',
+  'Universitas Sumatera Utara (USU)',
+  'Universitas Andalas (UNAND)',
+  'Universitas Sriwijaya (UNSRI)',
+  'Universitas Jenderal Soedirman (UNSOED)',
+  'Universitas Jember (UNEJ)',
+  'Universitas Negeri Surabaya (UNESA)',
+  'Universitas Negeri Malang (UM)',
+  'Universitas Negeri Yogyakarta (UNY)',
+  'UPN Veteran Jakarta',
+  'UPN Veteran Jawa Timur',
+  'Universitas Lampung (UNILA)',
+  'Universitas Tanjungpura (UNTAN)',
+  'Universitas Sam Ratulangi (UNSRAT)',
+  'Universitas Udayana (UNUD)',
+  'Universitas Mataram (UNRAM)',
+];
+
+const MAJORS_LIST = [
+  'Kedokteran',
+  'Teknik Informatika',
+  'Hukum',
+  'Ekonomi / Manajemen',
+  'Akuntansi',
+  'Perpajakan',
+  'Psikologi',
+  'Teknik Sipil',
+  'Teknik Elektro',
+  'Farmasi',
+  'Ilmu Komunikasi',
+  'Ilmu Politik',
+  'Sosiologi',
+  'Administrasi Bisnis',
+  'Administrasi Publik',
+  'Pendidikan Dokter Gigi',
+  'Teknik Kimia',
+  'Teknik Mesin',
+  'Arsitektur',
+  'Gizi / Ilmu Gizi',
+  'Statistika',
+  'Matematika',
+  'Fisika',
+  'Biologi',
+  'Kimia',
+  'Agroteknologi',
+  'Ilmu Keperawatan',
+  'Ilmu Hubungan Internasional',
+];
+
+// Passing grade per universitas dan jurusan (skala 300-700)
+// Sumber: perkiraan rata-rata SNBT / UTBK 2023-2024
+const PASSING_GRADES = {
+  'Universitas Indonesia (UI)': {
+    'Kedokteran': { min: 668, tier: 'Sangat Ketat', seats: 96 },
+    'Teknik Informatika': { min: 622, tier: 'Sangat Ketat', seats: 80 },
+    'Hukum': { min: 618, tier: 'Sangat Ketat', seats: 120 },
+    'Ekonomi / Manajemen': { min: 615, tier: 'Sangat Ketat', seats: 100 },
+    'Akuntansi': { min: 612, tier: 'Sangat Ketat', seats: 80 },
+    'Psikologi': { min: 614, tier: 'Sangat Ketat', seats: 70 },
+    'Teknik Sipil': { min: 616, tier: 'Sangat Ketat', seats: 90 },
+    'Teknik Elektro': { min: 618, tier: 'Sangat Ketat', seats: 80 },
+    'Farmasi': { min: 624, tier: 'Sangat Ketat', seats: 60 },
+    'Ilmu Komunikasi': { min: 608, tier: 'Sangat Ketat', seats: 90 },
+    'Ilmu Politik': { min: 605, tier: 'Sangat Ketat', seats: 70 },
+    'Sosiologi': { min: 595, tier: 'Ketat', seats: 60 },
+    'Statistika': { min: 608, tier: 'Sangat Ketat', seats: 60 },
+    'Teknik Kimia': { min: 614, tier: 'Sangat Ketat', seats: 70 },
+    'Teknik Mesin': { min: 612, tier: 'Sangat Ketat', seats: 80 },
+    'Arsitektur': { min: 610, tier: 'Sangat Ketat', seats: 60 },
+    'Ilmu Hubungan Internasional': { min: 612, tier: 'Sangat Ketat', seats: 60 },
+  },
+  'Universitas Gadjah Mada (UGM)': {
+    'Kedokteran': { min: 660, tier: 'Sangat Ketat', seats: 110 },
+    'Teknik Informatika': { min: 616, tier: 'Sangat Ketat', seats: 90 },
+    'Hukum': { min: 612, tier: 'Sangat Ketat', seats: 130 },
+    'Ekonomi / Manajemen': { min: 608, tier: 'Sangat Ketat', seats: 120 },
+    'Akuntansi': { min: 605, tier: 'Sangat Ketat', seats: 90 },
+    'Psikologi': { min: 606, tier: 'Sangat Ketat', seats: 75 },
+    'Teknik Sipil': { min: 610, tier: 'Sangat Ketat', seats: 100 },
+    'Teknik Elektro': { min: 612, tier: 'Sangat Ketat', seats: 90 },
+    'Farmasi': { min: 618, tier: 'Sangat Ketat', seats: 70 },
+    'Ilmu Komunikasi': { min: 600, tier: 'Ketat', seats: 100 },
+    'Statistika': { min: 602, tier: 'Sangat Ketat', seats: 70 },
+    'Teknik Kimia': { min: 608, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Mesin': { min: 606, tier: 'Sangat Ketat', seats: 90 },
+    'Arsitektur': { min: 604, tier: 'Sangat Ketat', seats: 70 },
+    'Ilmu Hubungan Internasional': { min: 606, tier: 'Sangat Ketat', seats: 70 },
+    'Ilmu Politik': { min: 598, tier: 'Ketat', seats: 70 },
+  },
+  'Institut Teknologi Bandung (ITB)': {
+    'Teknik Informatika': { min: 638, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Elektro': { min: 628, tier: 'Sangat Ketat', seats: 100 },
+    'Teknik Sipil': { min: 620, tier: 'Sangat Ketat', seats: 100 },
+    'Teknik Kimia': { min: 618, tier: 'Sangat Ketat', seats: 90 },
+    'Teknik Mesin': { min: 622, tier: 'Sangat Ketat', seats: 100 },
+    'Arsitektur': { min: 608, tier: 'Sangat Ketat', seats: 70 },
+    'Matematika': { min: 612, tier: 'Sangat Ketat', seats: 80 },
+    'Fisika': { min: 610, tier: 'Sangat Ketat', seats: 70 },
+    'Statistika': { min: 614, tier: 'Sangat Ketat', seats: 60 },
+  },
+  'Institut Pertanian Bogor (IPB)': {
+    'Teknik Informatika': { min: 605, tier: 'Sangat Ketat', seats: 80 },
+    'Statistika': { min: 600, tier: 'Ketat', seats: 70 },
+    'Matematika': { min: 595, tier: 'Ketat', seats: 60 },
+    'Biologi': { min: 590, tier: 'Ketat', seats: 70 },
+    'Kimia': { min: 588, tier: 'Ketat', seats: 60 },
+    'Agroteknologi': { min: 575, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 592, tier: 'Ketat', seats: 90 },
+    'Akuntansi': { min: 588, tier: 'Ketat', seats: 70 },
+  },
+  'Universitas Airlangga (UNAIR)': {
+    'Kedokteran': { min: 650, tier: 'Sangat Ketat', seats: 90 },
+    'Farmasi': { min: 624, tier: 'Sangat Ketat', seats: 70 },
+    'Hukum': { min: 598, tier: 'Ketat', seats: 120 },
+    'Ekonomi / Manajemen': { min: 592, tier: 'Ketat', seats: 110 },
+    'Akuntansi': { min: 590, tier: 'Ketat', seats: 90 },
+    'Perpajakan': { min: 585, tier: 'Ketat', seats: 60 },
+    'Psikologi': { min: 600, tier: 'Ketat', seats: 75 },
+    'Ilmu Komunikasi': { min: 588, tier: 'Ketat', seats: 90 },
+    'Teknik Informatika': { min: 605, tier: 'Sangat Ketat', seats: 80 },
+    'Ilmu Keperawatan': { min: 580, tier: 'Ketat', seats: 80 },
+    'Administrasi Bisnis': { min: 575, tier: 'Sedang', seats: 80 },
+    'Pendidikan Dokter Gigi': { min: 632, tier: 'Sangat Ketat', seats: 50 },
+  },
+  'Universitas Diponegoro (UNDIP)': {
+    'Kedokteran': { min: 645, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Informatika': { min: 606, tier: 'Sangat Ketat', seats: 80 },
+    'Hukum': { min: 598, tier: 'Ketat', seats: 120 },
+    'Ekonomi / Manajemen': { min: 592, tier: 'Ketat', seats: 110 },
+    'Akuntansi': { min: 590, tier: 'Ketat', seats: 90 },
+    'Teknik Sipil': { min: 596, tier: 'Ketat', seats: 90 },
+    'Teknik Elektro': { min: 598, tier: 'Ketat', seats: 80 },
+    'Teknik Kimia': { min: 594, tier: 'Ketat', seats: 70 },
+    'Teknik Mesin': { min: 592, tier: 'Ketat', seats: 80 },
+    'Psikologi': { min: 588, tier: 'Ketat', seats: 70 },
+  },
+  'Institut Teknologi Sepuluh Nopember (ITS)': {
+    'Teknik Informatika': { min: 618, tier: 'Sangat Ketat', seats: 90 },
+    'Teknik Elektro': { min: 610, tier: 'Sangat Ketat', seats: 100 },
+    'Teknik Sipil': { min: 602, tier: 'Ketat', seats: 100 },
+    'Teknik Kimia': { min: 598, tier: 'Ketat', seats: 80 },
+    'Teknik Mesin': { min: 604, tier: 'Sangat Ketat', seats: 90 },
+    'Arsitektur': { min: 592, tier: 'Ketat', seats: 60 },
+    'Statistika': { min: 600, tier: 'Ketat', seats: 70 },
+    'Matematika': { min: 595, tier: 'Ketat', seats: 70 },
+  },
+  'Universitas Padjadjaran (UNPAD)': {
+    'Kedokteran': { min: 640, tier: 'Sangat Ketat', seats: 100 },
+    'Farmasi': { min: 612, tier: 'Sangat Ketat', seats: 70 },
+    'Hukum': { min: 592, tier: 'Ketat', seats: 130 },
+    'Ekonomi / Manajemen': { min: 588, tier: 'Ketat', seats: 120 },
+    'Akuntansi': { min: 585, tier: 'Ketat', seats: 90 },
+    'Psikologi': { min: 590, tier: 'Ketat', seats: 80 },
+    'Ilmu Komunikasi': { min: 582, tier: 'Ketat', seats: 90 },
+    'Teknik Informatika': { min: 598, tier: 'Ketat', seats: 80 },
+    'Ilmu Hubungan Internasional': { min: 588, tier: 'Ketat', seats: 70 },
+  },
+  'Universitas Sebelas Maret (UNS)': {
+    'Kedokteran': { min: 630, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Informatika': { min: 592, tier: 'Ketat', seats: 80 },
+    'Hukum': { min: 585, tier: 'Ketat', seats: 120 },
+    'Ekonomi / Manajemen': { min: 580, tier: 'Ketat', seats: 110 },
+    'Akuntansi': { min: 578, tier: 'Sedang', seats: 90 },
+    'Psikologi': { min: 580, tier: 'Ketat', seats: 70 },
+    'Teknik Sipil': { min: 582, tier: 'Ketat', seats: 80 },
+    'Teknik Elektro': { min: 580, tier: 'Ketat', seats: 80 },
+    'Ilmu Komunikasi': { min: 572, tier: 'Sedang', seats: 90 },
+  },
+  'Universitas Brawijaya (UB)': {
+    'Kedokteran': { min: 628, tier: 'Sangat Ketat', seats: 90 },
+    'Teknik Informatika': { min: 590, tier: 'Ketat', seats: 80 },
+    'Hukum': { min: 583, tier: 'Ketat', seats: 130 },
+    'Ekonomi / Manajemen': { min: 578, tier: 'Sedang', seats: 120 },
+    'Akuntansi': { min: 575, tier: 'Sedang', seats: 90 },
+    'Teknik Sipil': { min: 580, tier: 'Ketat', seats: 90 },
+    'Teknik Elektro': { min: 578, tier: 'Sedang', seats: 80 },
+    'Psikologi': { min: 576, tier: 'Sedang', seats: 70 },
+    'Ilmu Komunikasi': { min: 568, tier: 'Sedang', seats: 90 },
+  },
+  'Universitas Hasanuddin (UNHAS)': {
+    'Kedokteran': { min: 622, tier: 'Sangat Ketat', seats: 90 },
+    'Teknik Informatika': { min: 588, tier: 'Ketat', seats: 80 },
+    'Hukum': { min: 580, tier: 'Ketat', seats: 120 },
+    'Ekonomi / Manajemen': { min: 575, tier: 'Sedang', seats: 110 },
+    'Teknik Sipil': { min: 577, tier: 'Sedang', seats: 90 },
+    'Teknik Elektro': { min: 576, tier: 'Sedang', seats: 80 },
+    'Farmasi': { min: 590, tier: 'Ketat', seats: 60 },
+    'Psikologi': { min: 572, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Sumatera Utara (USU)': {
+    'Kedokteran': { min: 618, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Informatika': { min: 582, tier: 'Ketat', seats: 70 },
+    'Hukum': { min: 575, tier: 'Sedang', seats: 110 },
+    'Ekonomi / Manajemen': { min: 570, tier: 'Sedang', seats: 100 },
+    'Teknik Sipil': { min: 572, tier: 'Sedang', seats: 80 },
+    'Farmasi': { min: 585, tier: 'Ketat', seats: 60 },
+    'Akuntansi': { min: 568, tier: 'Sedang', seats: 80 },
+  },
+  'Universitas Andalas (UNAND)': {
+    'Kedokteran': { min: 615, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Informatika': { min: 580, tier: 'Ketat', seats: 70 },
+    'Hukum': { min: 572, tier: 'Sedang', seats: 110 },
+    'Ekonomi / Manajemen': { min: 567, tier: 'Sedang', seats: 100 },
+    'Teknik Sipil': { min: 570, tier: 'Sedang', seats: 80 },
+    'Farmasi': { min: 582, tier: 'Ketat', seats: 60 },
+    'Akuntansi': { min: 565, tier: 'Sedang', seats: 80 },
+  },
+  'Universitas Sriwijaya (UNSRI)': {
+    'Kedokteran': { min: 605, tier: 'Sangat Ketat', seats: 80 },
+    'Teknik Informatika': { min: 570, tier: 'Sedang', seats: 70 },
+    'Hukum': { min: 562, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 558, tier: 'Sedang', seats: 100 },
+    'Teknik Sipil': { min: 560, tier: 'Sedang', seats: 80 },
+    'Teknik Kimia': { min: 565, tier: 'Sedang', seats: 70 },
+    'Akuntansi': { min: 555, tier: 'Sedang', seats: 80 },
+  },
+  'Universitas Jenderal Soedirman (UNSOED)': {
+    'Kedokteran': { min: 608, tier: 'Sangat Ketat', seats: 70 },
+    'Teknik Informatika': { min: 572, tier: 'Sedang', seats: 60 },
+    'Hukum': { min: 565, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 560, tier: 'Sedang', seats: 90 },
+    'Akuntansi': { min: 558, tier: 'Sedang', seats: 70 },
+    'Psikologi': { min: 558, tier: 'Sedang', seats: 60 },
+    'Ilmu Komunikasi': { min: 552, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Jember (UNEJ)': {
+    'Kedokteran': { min: 600, tier: 'Ketat', seats: 70 },
+    'Teknik Informatika': { min: 566, tier: 'Sedang', seats: 60 },
+    'Hukum': { min: 560, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 555, tier: 'Sedang', seats: 90 },
+    'Akuntansi': { min: 552, tier: 'Sedang', seats: 70 },
+    'Teknik Sipil': { min: 558, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Negeri Surabaya (UNESA)': {
+    'Teknik Informatika': { min: 560, tier: 'Sedang', seats: 70 },
+    'Psikologi': { min: 556, tier: 'Sedang', seats: 60 },
+    'Ekonomi / Manajemen': { min: 552, tier: 'Sedang', seats: 90 },
+    'Akuntansi': { min: 550, tier: 'Sedang', seats: 70 },
+    'Ilmu Komunikasi': { min: 546, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Negeri Malang (UM)': {
+    'Teknik Informatika': { min: 558, tier: 'Sedang', seats: 70 },
+    'Psikologi': { min: 552, tier: 'Sedang', seats: 60 },
+    'Ekonomi / Manajemen': { min: 548, tier: 'Sedang', seats: 90 },
+    'Akuntansi': { min: 545, tier: 'Sedang', seats: 70 },
+    'Hukum': { min: 544, tier: 'Sedang', seats: 90 },
+    'Ilmu Komunikasi': { min: 540, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Negeri Yogyakarta (UNY)': {
+    'Teknik Informatika': { min: 552, tier: 'Sedang', seats: 70 },
+    'Ekonomi / Manajemen': { min: 545, tier: 'Sedang', seats: 90 },
+    'Psikologi': { min: 542, tier: 'Sedang', seats: 60 },
+    'Akuntansi': { min: 540, tier: 'Sedang', seats: 70 },
+    'Ilmu Komunikasi': { min: 536, tier: 'Sedang', seats: 70 },
+  },
+  'UPN Veteran Jakarta': {
+    'Teknik Informatika': { min: 575, tier: 'Sedang', seats: 70 },
+    'Hukum': { min: 568, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 562, tier: 'Sedang', seats: 100 },
+    'Akuntansi': { min: 560, tier: 'Sedang', seats: 80 },
+    'Perpajakan': { min: 555, tier: 'Sedang', seats: 60 },
+    'Ilmu Komunikasi': { min: 556, tier: 'Sedang', seats: 80 },
+    'Ilmu Hubungan Internasional': { min: 565, tier: 'Sedang', seats: 70 },
+    'Ilmu Politik': { min: 558, tier: 'Sedang', seats: 70 },
+    'Administrasi Bisnis': { min: 552, tier: 'Sedang', seats: 70 },
+    'Administrasi Publik': { min: 548, tier: 'Sedang', seats: 70 },
+  },
+  'UPN Veteran Jawa Timur': {
+    'Teknik Informatika': { min: 570, tier: 'Sedang', seats: 70 },
+    'Hukum': { min: 562, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 556, tier: 'Sedang', seats: 100 },
+    'Akuntansi': { min: 554, tier: 'Sedang', seats: 80 },
+    'Perpajakan': { min: 550, tier: 'Sedang', seats: 60 },
+    'Ilmu Komunikasi': { min: 550, tier: 'Sedang', seats: 80 },
+    'Administrasi Bisnis': { min: 548, tier: 'Sedang', seats: 70 },
+    'Administrasi Publik': { min: 545, tier: 'Sedang', seats: 70 },
+    'Ilmu Politik': { min: 547, tier: 'Sedang', seats: 60 },
+    'Ilmu Hubungan Internasional': { min: 552, tier: 'Sedang', seats: 60 },
+    'Teknik Sipil': { min: 552, tier: 'Sedang', seats: 60 },
+    'Teknik Kimia': { min: 550, tier: 'Sedang', seats: 60 },
+  },
+  'Universitas Lampung (UNILA)': {
+    'Kedokteran': { min: 598, tier: 'Ketat', seats: 60 },
+    'Teknik Informatika': { min: 562, tier: 'Sedang', seats: 60 },
+    'Hukum': { min: 555, tier: 'Sedang', seats: 90 },
+    'Ekonomi / Manajemen': { min: 548, tier: 'Sedang', seats: 90 },
+    'Akuntansi': { min: 545, tier: 'Sedang', seats: 70 },
+    'Teknik Sipil': { min: 550, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Tanjungpura (UNTAN)': {
+    'Kedokteran': { min: 592, tier: 'Ketat', seats: 60 },
+    'Teknik Informatika': { min: 556, tier: 'Sedang', seats: 60 },
+    'Hukum': { min: 548, tier: 'Sedang', seats: 80 },
+    'Ekonomi / Manajemen': { min: 542, tier: 'Sedang', seats: 80 },
+    'Teknik Sipil': { min: 545, tier: 'Sedang', seats: 60 },
+  },
+  'Universitas Sam Ratulangi (UNSRAT)': {
+    'Kedokteran': { min: 590, tier: 'Ketat', seats: 60 },
+    'Teknik Informatika': { min: 553, tier: 'Sedang', seats: 60 },
+    'Hukum': { min: 545, tier: 'Sedang', seats: 80 },
+    'Ekonomi / Manajemen': { min: 540, tier: 'Sedang', seats: 80 },
+    'Teknik Sipil': { min: 542, tier: 'Sedang', seats: 60 },
+  },
+  'Universitas Udayana (UNUD)': {
+    'Kedokteran': { min: 612, tier: 'Sangat Ketat', seats: 70 },
+    'Teknik Informatika': { min: 578, tier: 'Sedang', seats: 70 },
+    'Hukum': { min: 568, tier: 'Sedang', seats: 100 },
+    'Ekonomi / Manajemen': { min: 562, tier: 'Sedang', seats: 100 },
+    'Psikologi': { min: 564, tier: 'Sedang', seats: 60 },
+    'Akuntansi': { min: 560, tier: 'Sedang', seats: 80 },
+    'Ilmu Komunikasi': { min: 555, tier: 'Sedang', seats: 70 },
+  },
+  'Universitas Mataram (UNRAM)': {
+    'Kedokteran': { min: 588, tier: 'Ketat', seats: 60 },
+    'Teknik Informatika': { min: 550, tier: 'Sedang', seats: 60 },
+    'Hukum': { min: 542, tier: 'Sedang', seats: 80 },
+    'Ekonomi / Manajemen': { min: 536, tier: 'Sedang', seats: 80 },
+    'Teknik Sipil': { min: 540, tier: 'Sedang', seats: 60 },
+  },
+};
+
+/**
+ * Get passing grade for a university + major combination
+ * @param {string} university
+ * @param {string} major
+ * @returns {object|null}
+ */
+function getPassingGrade(university, major) {
+  if (PASSING_GRADES[university] && PASSING_GRADES[university][major]) {
+    return PASSING_GRADES[university][major];
+  }
+  // Default if not found (generic estimate)
+  return { min: 540, tier: 'Data Tidak Tersedia', seats: 0 };
+}
+
+/**
+ * Predict chance of acceptance
+ * @param {number} score - Student's total score (300-700 scale)
+ * @param {number} passingGrade - Required passing grade
+ * @returns {object}
+ */
+function predictChance(score, passingGrade) {
+  const diff = score - passingGrade;
+  if (diff >= 20) {
+    return { status: 'Aman', icon: '🟢', color: '#10b981', percent: 90, description: 'Peluang diterima sangat tinggi' };
+  } else if (diff >= 5) {
+    return { status: 'Bersaing', icon: '🟡', color: '#f59e0b', percent: 65, description: 'Peluang cukup baik, tetap tingkatkan' };
+  } else if (diff >= -10) {
+    return { status: 'Ketat', icon: '🟠', color: '#f97316', percent: 35, description: 'Batas sangat tipis, butuh peningkatan' };
+  } else {
+    return { status: 'Perlu Usaha', icon: '🔴', color: '#ef4444', percent: 10, description: 'Masih ada gap, perlu belajar lebih keras' };
+  }
+}

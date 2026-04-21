@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ujian Berlangsung — TryoutSNBT Pro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/exam.css">
+</head>
+<body class="exam-body">
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<!-- Anti-Cheat Overlay -->
+<div class="anticheat-overlay" id="anticheat-overlay" style="display:none;">
+  <div class="anticheat-icon">🚨</div>
+  <div class="anticheat-title">PERINGATAN SERIUS!</div>
+  <div class="anticheat-message">
+    Sistem mendeteksi <strong>pelanggaran</strong> berulang selama ujian berlangsung.<br>
+    Jangan berpindah tab, keluar fullscreen, atau melakukan aktivitas mencurigakan!
+  </div>
+  <div class="violation-count-display" id="violation-num">0</div>
+  <div style="color:var(--text-muted);font-size:0.875rem;">Pelanggaran tercatat</div>
+  <button class="btn btn-danger" onclick="dismissWarning()">Saya Mengerti</button>
+</div>
+
+<!-- Finish Exam Modal -->
+<div class="modal-overlay" id="finish-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="font-size:3rem;margin-bottom:12px;">📋</div>
+      <div class="modal-title">Konfirmasi Selesai Ujian</div>
+      <p style="color:var(--text-secondary);font-size:0.9rem;">Apakah kamu yakin ingin menyelesaikan ujian ini?</p>
+    </div>
+    <div class="confirm-stats">
+      <div class="stat-pill green">
+        <div class="stat-pill-num" id="confirm-answered">0</div>
+        <div class="stat-pill-label">Dijawab</div>
+      </div>
+      <div class="stat-pill yellow">
+        <div class="stat-pill-num" id="confirm-flagged">0</div>
+        <div class="stat-pill-label">Ragu-ragu</div>
+      </div>
+      <div class="stat-pill gray">
+        <div class="stat-pill-num" id="confirm-unanswered">0</div>
+        <div class="stat-pill-label">Kosong</div>
+      </div>
+    </div>
+    <div style="padding:12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:0.8125rem;color:#fcd34d;text-align:center;margin-bottom:24px;">
+      ⚠️ Soal yang belum dijawab akan dianggap salah. Pastikan kamu sudah memeriksa semua jawaban.
+    </div>
+    <div class="modal-footer" style="justify-content:center;gap:14px;">
+      <button class="btn btn-secondary" onclick="closeFinishModal()">↩ Kembali ke Ujian</button>
+      <button class="btn btn-success btn-lg" onclick="finishExam()">✅ Selesaikan Ujian</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EXAM WRAPPER ===== -->
+<div class="exam-wrapper">
+
+  <!-- ===== HEADER ===== -->
+  <header class="exam-header">
+    <div class="exam-logo">
+      <div class="logo-icon">📝</div>
+      <span>SNBT Pro</span>
+    </div>
+    <div class="exam-divider-v"></div>
+    <div class="exam-subtest-badge" id="current-subtest-badge">Memuat...</div>
+
+    <div class="exam-participant-info">
+      <span>👤</span>
+      <span class="exam-participant-name" id="participant-name">Loading...</span>
+    </div>
+
+    <!-- Violations -->
+    <div class="violation-badge" id="violation-badge" style="display:none;">
+      🚨 Pelanggaran: <span id="violation-count">0</span>
+    </div>
+
+    <!-- Timers -->
+    <div class="exam-timers">
+      <div class="timer-box subtest-timer">
+        <div class="timer-label">⏱ Subtes</div>
+        <div class="timer-value" id="subtest-timer">--:--</div>
+      </div>
+      <div class="timer-box">
+        <div class="timer-label">🌐 Total</div>
+        <div class="timer-value" id="global-timer">--:--:--</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="exam-sidebar">
+    <!-- Subtest Navigation -->
+    <div class="sidebar-section-title">Subtes</div>
+    <div id="subtest-nav"></div>
+
+    <div class="divider" style="margin:8px 0;"></div>
+
+    <!-- Question Grid -->
+    <div class="sidebar-section-title">Navigasi Soal</div>
+    <div class="question-grid" id="question-grid"></div>
+
+    <div class="divider" style="margin:8px 0;"></div>
+
+    <!-- Legend -->
+    <div class="sidebar-section-title">Keterangan</div>
+    <div class="sidebar-legend">
+      <div class="legend-item"><div class="legend-dot active"></div> Soal Aktif</div>
+      <div class="legend-item"><div class="legend-dot answered"></div> Sudah Dijawab</div>
+      <div class="legend-item"><div class="legend-dot flagged"></div> Ragu-ragu</div>
+      <div class="legend-item"><div class="legend-dot unanswered"></div> Belum Dijawab</div>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-label">
+        <span>Progress</span>
+        <span id="sidebar-progress-text">0%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" id="sidebar-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="exam-main" id="exam-main">
+    <div class="exam-loading">
+      <div class="loading-spinner"></div>
+      <p style="color:var(--text-muted);">Memuat soal ujian...</p>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="exam-footer">
+    <div class="footer-nav">
+      <button class="btn btn-secondary btn-sm" onclick="prevQuestion()">← Sebelumnya</button>
+    </div>
+
+    <div class="footer-progress-info" id="footer-progress">
+      Dijawab: <strong>0</strong>/0
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn btn-secondary btn-sm" onclick="nextQuestion()">Berikutnya →</button>
+      <button class="finish-subtest-btn" onclick="advanceToNextSubtest()">⏭ Subtes Selanjutnya</button>
+      <button class="btn btn-success btn-sm submit-exam-btn" onclick="showFinishModal()">🏁 Selesai</button>
+    </div>
+  </footer>
+
+</div><!-- end exam-wrapper -->
+
+<script src="js/questions.js"></script>
+<script src="js/exam.js"></script>
+</body>
+</html>
