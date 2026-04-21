@@ -39,12 +39,16 @@ function initParticles() {
 function initCountdown() {
   const el = document.getElementById('countdown-display');
   if (!el) return;
-  // SNBT 2026 estimated date: May 13, 2026
-  const target = new Date('2026-05-13T08:00:00+07:00');
+  // Target: 25 Mei 2026 — Pengumuman Hasil SNBT
+  const target = new Date('2026-05-25T15:00:00+07:00');
   function update() {
     const now = new Date();
     const diff = target - now;
-    if (diff <= 0) { el.textContent = 'SNBT Sudah Berlangsung!'; return; }
+    if (diff <= 0) {
+      document.querySelector('.countdown-label').textContent = '🎉 Pengumuman Hasil SNBT 2026 Sudah Tiba!';
+      el.innerHTML = '<div style="font-size:1.5rem;color:var(--primary-light);font-weight:800;">Cek Hasil di Portal SNPMB!</div>';
+      return;
+    }
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
@@ -114,29 +118,51 @@ function getLeaderboard() {
 function renderLeaderboard() {
   const tbody = document.getElementById('leaderboard-body');
   if (!tbody) return;
-  const data = getLeaderboard()
-    .sort((a, b) => b.totalScore - a.totalScore)
-    .slice(0, 10);
+
+  // Sort by score descending, but keep tryout order for display
+  const raw = getLeaderboard();
+  // Assign tryout number berdasarkan urutan waktu per nama
+  const byName = {};
+  // Sort semua entries by date ascending untuk assign tryout number
+  const chronological = [...raw].sort((a,b) => new Date(a.date) - new Date(b.date));
+  chronological.forEach(entry => {
+    const key = (entry.name || '').toLowerCase().trim();
+    if (!byName[key]) byName[key] = 0;
+    byName[key]++;
+    entry._tryoutNum = byName[key];
+  });
+
+  const data = raw.sort((a, b) => b.totalScore - a.totalScore).slice(0, 10);
 
   if (data.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px;">
-          Belum ada tryout yang diselesaikan. Jadilah yang pertama!
+        <td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">
+          Belum ada tryout yang diselesaikan. Jadilah yang pertama! 🚀
         </td>
       </tr>`;
     return;
   }
 
   const medals = ['🥇','🥈','🥉'];
-  tbody.innerHTML = data.map((entry, i) => `
+  tbody.innerHTML = data.map((entry, i) => {
+    const dt = new Date(entry.date);
+    const dateStr = dt.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+    const timeStr = dt.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    const tryoutNum = entry._tryoutNum || '?';
+    return `
     <tr>
-      <td>${medals[i] || (i+1)}</td>
+      <td>${medals[i] || '#'+(i+1)}</td>
       <td style="font-weight:600;">${escapeHtml(entry.name)}</td>
+      <td>
+        <span style="background:rgba(99,102,241,0.15);color:var(--primary-light);padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">
+          Tryout #${tryoutNum}
+        </span>
+      </td>
       <td style="color:var(--primary-light);font-weight:700;">${entry.totalScore.toFixed(1)}</td>
-      <td style="color:var(--text-muted);">${new Date(entry.date).toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'})}</td>
-    </tr>
-  `).join('');
+      <td style="color:var(--text-muted);font-size:0.8rem;">${dateStr}<br><span style="font-size:0.7rem;opacity:0.7;">${timeStr}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 // ===== Registration Form =====

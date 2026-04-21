@@ -443,18 +443,26 @@ function initReviewFilters() {
 // ===== Leaderboard =====
 function saveToLeaderboard(scores, registration) {
   const lb = getLeaderboard();
+
+  // Hitung tryout ke berapa untuk user ini
+  const myName = (registration.name || '').toLowerCase().trim();
+  const myPastTryouts = lb.filter(e => (e.name || '').toLowerCase().trim() === myName);
+  const tryoutNum = myPastTryouts.length + 1;
+
   const entry = {
     name: registration.name,
     totalScore: scores.total.snbtScore,
     date: new Date().toISOString(),
+    tryoutNum,              // Tryout ke-N untuk user ini
     subtestScores: Object.fromEntries(
       ['PU','PPU','PBM','PK','LBI','LBE','PM'].map(s => [s, scores[s].snbtScore])
     ),
   };
   lb.push(entry);
-  // Keep only last 50 entries
-  const sorted = lb.sort((a,b) => b.totalScore - a.totalScore).slice(0, 50);
+  // Keep all entries (max 100), sorted by score
+  const sorted = lb.sort((a,b) => b.totalScore - a.totalScore).slice(0, 100);
   localStorage.setItem('snbt_leaderboard', JSON.stringify(sorted));
+  return tryoutNum; // return untuk digunakan di hero
 }
 
 function getLeaderboard() {
@@ -466,18 +474,43 @@ function renderLeaderboard(scores, registration) {
   const tbody = document.getElementById('result-leaderboard-body');
   if (!tbody) return;
 
-  const data = getLeaderboard().slice(0, 10);
+  const raw = getLeaderboard();
+
+  // Assign tryout number per nama secara kronologis
+  const byName = {};
+  const chronological = [...raw].sort((a,b) => new Date(a.date) - new Date(b.date));
+  chronological.forEach(entry => {
+    const key = (entry.name || '').toLowerCase().trim();
+    if (!byName[key]) byName[key] = 0;
+    byName[key]++;
+    // Gunakan tryoutNum yang tersimpan, atau hitung dari urutan kronologis
+    if (!entry.tryoutNum) entry.tryoutNum = byName[key];
+  });
+
+  const data = raw.sort((a,b) => b.totalScore - a.totalScore).slice(0, 10);
   const medals = ['🥇','🥈','🥉'];
   const myScore = scores.total.snbtScore;
+  const myName = (registration.name || '').toLowerCase().trim();
 
-  tbody.innerHTML = data.map((entry, i) => `
-    <tr class="${Math.abs(entry.totalScore - myScore) < 0.5 ? 'current-row' : ''}">
+  tbody.innerHTML = data.map((entry, i) => {
+    const dt = new Date(entry.date);
+    const dateStr = dt.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+    const timeStr = dt.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    const isMe = (entry.name || '').toLowerCase().trim() === myName && Math.abs(entry.totalScore - myScore) < 0.5;
+    const tryoutNum = entry.tryoutNum || '?';
+    return `
+    <tr class="${isMe ? 'current-row' : ''}">
       <td>${medals[i] || `#${i+1}`}</td>
-      <td>${escapeHtml(entry.name)} ${Math.abs(entry.totalScore - myScore) < 0.5 ? '<span style="color:var(--primary-light);font-size:0.75rem;">(Kamu)</span>' : ''}</td>
+      <td>${escapeHtml(entry.name)} ${isMe ? '<span style="color:var(--primary-light);font-size:0.75rem;">(Kamu)</span>' : ''}</td>
+      <td>
+        <span style="background:rgba(99,102,241,0.15);color:var(--primary-light);padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">
+          Tryout #${tryoutNum}
+        </span>
+      </td>
       <td style="font-weight:700;color:var(--primary-light);">${entry.totalScore.toFixed(1)}</td>
-      <td style="color:var(--text-muted);">${new Date(entry.date).toLocaleDateString('id-ID',{day:'numeric',month:'short'})}</td>
-    </tr>
-  `).join('');
+      <td style="color:var(--text-muted);font-size:0.8rem;">${dateStr}<br><span style="font-size:0.7rem;opacity:0.7;">${timeStr}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 // ===== Tabs =====

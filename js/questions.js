@@ -880,12 +880,17 @@ function shuffleArray(arr) {
 }
 
 /**
- * Get shuffled questions for each subtest
+ * getShuffledQuestions() — didefinisikan di questions_extra.js
+ * yang menggabungkan QUESTION_BANK + QUESTION_BANK_EXTRA
+ * dan mengambil sampel acak setiap tryout.
+ * Fungsi ini adalah fallback jika questions_extra.js tidak dimuat.
  */
 function getShuffledQuestions() {
+  // Jika questions_extra.js sudah dimuat, fungsinya sudah di-override di sana
+  // Fallback: hanya pakai bank utama
   const result = {};
   for (const key of SUBTEST_ORDER) {
-    result[key] = shuffleArray(QUESTION_BANK[key]);
+    result[key] = shuffleArray(QUESTION_BANK[key] || []);
   }
   return result;
 }
