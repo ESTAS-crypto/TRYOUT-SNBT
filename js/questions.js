@@ -856,13 +856,13 @@ const QUESTION_BANK = {
 
 // Informasi subtes
 const SUBTEST_INFO = {
-  PU:  { name: 'Penalaran Umum',                    code:'PU',  time: 30, questions: 30, color: '#6366f1' },
-  PPU: { name: 'Pengetahuan & Pemahaman Umum',       code:'PPU', time: 15, questions: 20, color: '#8b5cf6' },
-  PBM: { name: 'Pemahaman Bacaan & Menulis',         code:'PBM', time: 25, questions: 20, color: '#06b6d4' },
-  PK:  { name: 'Pengetahuan Kuantitatif',            code:'PK',  time: 20, questions: 20, color: '#f59e0b' },
-  LBI: { name: 'Literasi Bahasa Indonesia',          code:'LBI', time: 30, questions: 30, color: '#10b981' },
-  LBE: { name: 'Literasi Bahasa Inggris',            code:'LBE', time: 20, questions: 20, color: '#ef4444' },
-  PM:  { name: 'Penalaran Matematika',               code:'PM',  time: 30, questions: 30, color: '#f97316' },
+  PU:  { name: 'Penalaran Umum',                    code:'PU',  time: 45, questions: 30, color: '#6366f1' },
+  PPU: { name: 'Pengetahuan & Pemahaman Umum',       code:'PPU', time: 25, questions: 20, color: '#8b5cf6' },
+  PBM: { name: 'Pemahaman Bacaan & Menulis',         code:'PBM', time: 35, questions: 20, color: '#06b6d4' },
+  PK:  { name: 'Pengetahuan Kuantitatif',            code:'PK',  time: 30, questions: 20, color: '#f59e0b' },
+  LBI: { name: 'Literasi Bahasa Indonesia',          code:'LBI', time: 45, questions: 30, color: '#10b981' },
+  LBE: { name: 'Literasi Bahasa Inggris',            code:'LBE', time: 30, questions: 20, color: '#ef4444' },
+  PM:  { name: 'Penalaran Matematika',               code:'PM',  time: 60, questions: 30, color: '#f97316' },
 };
 
 const SUBTEST_ORDER = ['PU','PPU','PBM','PK','LBI','LBE','PM'];

@@ -159,11 +159,10 @@
 <script src="js/exam.js"></script>
 <script>
   // ===== Service Worker Registration =====
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('./sw.js', { scope: './' })
       .then(reg => {
         console.log('[SW] Registered on exam page');
-        // Pastikan SW aktif sebelum ujian memulai sinyal
         if (reg.installing) {
           reg.installing.addEventListener('statechange', () => {
             if (reg.installing?.state === 'activated') {
