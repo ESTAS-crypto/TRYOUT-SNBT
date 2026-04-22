@@ -179,12 +179,78 @@ function showFullscreenPrompt() {
 }
 
 function beginExam() {
-  state.examStarted = true;
-  startTimers();
-  renderQuestion();
-  saveState();
-  notifyServiceWorker('EXAM_START');
-  showOfflineBadge(true);
+  showCountdown(() => {
+    state.examStarted = true;
+    startTimers();
+    renderQuestion();
+    saveState();
+    notifyServiceWorker('EXAM_START');
+    showOfflineBadge(true);
+  });
+}
+
+function showCountdown(onComplete) {
+  const main = document.getElementById('exam-main');
+  if (!main) { onComplete(); return; }
+
+  const steps = [
+    { text: '3', sub: 'Bersiap...', color: '#6366f1' },
+    { text: '2', sub: 'Fokus...', color: '#8b5cf6' },
+    { text: '1', sub: 'Konsentrasi...', color: '#a78bfa' },
+    { text: '🚀', sub: 'MULAI!', color: '#10b981' },
+  ];
+  let idx = 0;
+
+  main.innerHTML = `
+    <div id="countdown-overlay" style="
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      height:100%;gap:16px;text-align:center;
+    ">
+      <div id="cd-number" style="
+        font-size:8rem;font-weight:900;color:#6366f1;
+        animation:cdPulse 0.6s ease;
+        text-shadow:0 0 60px rgba(99,102,241,0.4);
+      ">3</div>
+      <div id="cd-sub" style="font-size:1.25rem;color:var(--text-secondary);font-weight:500;">Bersiap...</div>
+      <div style="
+        width:200px;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;
+        overflow:hidden;margin-top:8px;
+      ">
+        <div id="cd-bar" style="
+          height:100%;width:0%;background:linear-gradient(90deg,#6366f1,#a78bfa);
+          border-radius:4px;transition:width 0.8s ease;
+        "></div>
+      </div>
+    </div>
+    <style>
+      @keyframes cdPulse {
+        0% { transform:scale(0.3);opacity:0; }
+        50% { transform:scale(1.2);opacity:1; }
+        100% { transform:scale(1);opacity:1; }
+      }
+    </style>
+  `;
+
+  function tick() {
+    if (idx >= steps.length) { onComplete(); return; }
+    const s = steps[idx];
+    const numEl = document.getElementById('cd-number');
+    const subEl = document.getElementById('cd-sub');
+    const barEl = document.getElementById('cd-bar');
+    if (numEl) {
+      numEl.textContent = s.text;
+      numEl.style.color = s.color;
+      numEl.style.textShadow = `0 0 60px ${s.color}66`;
+      numEl.style.animation = 'none';
+      void numEl.offsetWidth;
+      numEl.style.animation = 'cdPulse 0.6s ease';
+    }
+    if (subEl) subEl.textContent = s.sub;
+    if (barEl) barEl.style.width = `${((idx + 1) / steps.length) * 100}%`;
+    idx++;
+    setTimeout(tick, idx >= steps.length ? 600 : 1000);
+  }
+  tick();
 }
 
 // ===== Fullscreen =====
