@@ -4,7 +4,7 @@
  * - Blokir request eksternal saat ujian berlangsung
  */
 
-const CACHE_NAME = 'snbt-pro-v1';
+const CACHE_NAME = 'snbt-pro-v2';
 const EXAM_FLAG_KEY = 'snbt_exam_active';
 
 // Semua file yang perlu di-cache
@@ -18,6 +18,10 @@ const ASSETS_TO_CACHE = [
   './css/result.css',
   './js/questions.js',
   './js/questions_extra.js',
+  './js/questions_extra2.js',
+  './js/questions_extra3.js',
+  './js/questions_extra4.js',
+  './js/questions_extra5.js',
   './js/passgrade.js',
   './js/exam.js',
   './js/result.js',
