@@ -75,8 +75,8 @@ function init() {
   startAntiCheat();
 
   if (isRestored) {
-    // Restored exam: skip prompt, start directly
-    beginExam();
+    // Restored exam: show prompt to require user click for fullscreen API
+    showFullscreenPrompt(true);
   } else {
     // Fresh exam: show fullscreen prompt
     startExam();
@@ -145,25 +145,26 @@ function startExam() {
   showFullscreenPrompt();
 }
 
-function showFullscreenPrompt() {
+function showFullscreenPrompt(isRestored = false) {
   const main = document.getElementById('exam-main');
   if (!main) return;
   main.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:24px;padding:40px;text-align:center;">
       <div style="font-size:4rem;">🖥️</div>
-      <h2 style="color:var(--text-primary);margin:0;">Siap Memulai Ujian?</h2>
+      <h2 style="color:var(--text-primary);margin:0;">${isRestored ? 'Lanjutkan Ujian?' : 'Siap Memulai Ujian?'}</h2>
       <p style="color:var(--text-secondary);max-width:500px;line-height:1.7;">
         Ujian akan berjalan dalam <strong>mode Fullscreen</strong> untuk mencegah kecurangan.<br>
-        Klik tombol di bawah untuk masuk fullscreen dan memulai ujian.
+        Klik tombol di bawah untuk masuk fullscreen dan ${isRestored ? 'melanjutkan' : 'memulai'} ujian.
       </p>
+      ${!isRestored ? `
       <div style="padding:16px 24px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:12px;max-width:480px;">
         <p style="color:#fcd34d;font-size:0.875rem;margin:0;line-height:1.6;">
           ⚠️ <strong>Durasi Ujian: 4 Jam 30 Menit</strong><br>
           7 Subtes • 170 Soal • Timer otomatis per subtes
         </p>
-      </div>
+      </div>` : ''}
       <button id="start-fullscreen-btn" class="btn btn-primary btn-lg" style="padding:16px 40px;font-size:1.1rem;min-width:280px;">
-        🚀 Mulai Ujian Fullscreen
+        🚀 ${isRestored ? 'Lanjutkan Ujian Fullscreen' : 'Mulai Ujian Fullscreen'}
       </button>
     </div>
   `;
