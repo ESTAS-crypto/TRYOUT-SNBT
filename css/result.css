@@ -523,3 +523,39 @@
   .score-hero { padding: 40px 16px; }
   .confirm-stats { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ===== Print Styles (PDF Export) ===== */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body, .result-page {
+    background-color: #070714 !important; /* Force dark background */
+    color: #e2e8f0 !important;
+  }
+  /* Hide UI elements that shouldn't be printed */
+  .result-header, 
+  .result-tabs, 
+  .tab-panel:not(.active), /* Only print the active tab */
+  button {
+    display: none !important;
+  }
+  .result-container {
+    max-width: 100% !important;
+    padding: 20px !important;
+  }
+  /* Prevent page breaks inside cards */
+  .subtest-score-card, 
+  .analysis-card, 
+  .university-card,
+  .review-item {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  /* Expand the page to fit all content */
+  html, body, .result-page {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
