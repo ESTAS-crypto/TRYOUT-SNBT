@@ -526,6 +526,10 @@
 
 /* ===== Print Styles (PDF Export) ===== */
 @media print {
+  @page {
+    margin: 0; /* Remove default browser white margins */
+    size: A4 portrait;
+  }
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -533,6 +537,10 @@
   body, .result-page {
     background-color: #070714 !important; /* Force dark background */
     color: #e2e8f0 !important;
+    margin: 0 !important;
+  }
+  .result-page {
+    padding: 1.5cm 1.5cm 2cm 1.5cm !important; /* Add padding inside the dark background since @page margin is 0 */
   }
   /* Fix Gradient Backgrounds dropping in print */
   .score-hero {
@@ -563,7 +571,7 @@
   }
   .result-container {
     max-width: 100% !important;
-    padding: 20px !important;
+    padding: 0 !important;
   }
   /* Prevent page breaks inside cards */
   .subtest-score-card, 
