@@ -10,7 +10,7 @@
 
 <br>
 
-<img src="https://img.shields.io/badge/Soal-340+_Unik-6366f1?style=flat-square&logo=bookstack&logoColor=white" alt="340+ Soal">
+<img src="https://img.shields.io/badge/Soal-680+_Unik-6366f1?style=flat-square&logo=bookstack&logoColor=white" alt="680+ Soal">
 <img src="https://img.shields.io/badge/Subtes-7_Lengkap-8b5cf6?style=flat-square&logo=layers&logoColor=white" alt="7 Subtes">
 <img src="https://img.shields.io/badge/Durasi-4_Jam_30_Menit-06b6d4?style=flat-square&logo=clock&logoColor=white" alt="4.5 Jam">
 <img src="https://img.shields.io/badge/Anti_Cheat-Aktif-ef4444?style=flat-square&logo=shield&logoColor=white" alt="Anti-Cheat">
@@ -27,7 +27,7 @@
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| 📝 **340+ Bank Soal Unik** | Setiap tryout mengambil 170 soal acak dari 340+ bank soal — **tidak ada dua orang yang mendapat soal sama!** |
+| 📝 **680+ Bank Soal Unik** | Setiap tryout mengambil 170 soal acak dari 680+ bank soal — **tidak ada dua orang yang mendapat soal sama!** |
 | ⏱️ **Timer Realistis** | Durasi 4 jam 30 menit (270 menit) dengan timer per subtes otomatis |
 | 🔒 **Anti-Cheat System** | Fullscreen otomatis, deteksi tab switch, blokir shortcut & copy-paste |
 | 📊 **Analisis Mendalam** | Skor per subtes, grafik radar, persentil, dan pembahasan lengkap |
@@ -127,7 +127,7 @@ Platform ini dilengkapi sistem anti-kecurangan berlapis:
 ## 📈 Roadmap
 
 - [x] 7 Subtes SNBT lengkap
-- [x] Bank soal 340+ unik
+- [x] Bank soal 680+ unik
 - [x] Anti-cheat system
 - [x] Leaderboard & tracking progress
 - [x] Analisis hasil mendalam

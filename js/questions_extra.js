@@ -704,23 +704,3 @@ const QUESTION_BANK_EXTRA = {
   ],
 };
 
-/**
- * Gabungkan QUESTION_BANK + QUESTION_BANK_EXTRA dan ambil sample acak
- * sesuai jumlah yang dibutuhkan per subtes
- */
-function getShuffledQuestions() {
-  const result = {};
-  for (const key of SUBTEST_ORDER) {
-    // Gabungkan bank soal utama + ekstra
-    const allQ = [
-      ...(QUESTION_BANK[key] || []),
-      ...(QUESTION_BANK_EXTRA[key] || []),
-    ];
-    // Acak seluruh bank
-    const shuffled = shuffleArray(allQ);
-    // Ambil hanya sejumlah soal yang dibutuhkan
-    const needed = SUBTEST_INFO[key].questions;
-    result[key] = shuffled.slice(0, needed);
-  }
-  return result;
-}
