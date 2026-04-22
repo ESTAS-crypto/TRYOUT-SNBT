@@ -569,9 +569,16 @@
   .subtest-score-card, 
   .analysis-card, 
   .university-card,
-  .review-item {
+  .review-item,
+  .chart-container {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+  /* Keep section headers attached to content */
+  .result-section-header {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-bottom: 10px !important;
   }
   /* Expand the page to fit all content */
   html, body, .result-page {
