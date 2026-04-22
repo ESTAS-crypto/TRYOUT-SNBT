@@ -487,12 +487,14 @@ window.jumpToSubtest = function(sub) {
 };
 
 window.goToQuestion = function(index) {
+  if (window.autoAdvanceTimer) clearTimeout(window.autoAdvanceTimer);
   state.currentQuestion = index;
   renderQuestion();
   buildQuestionGrid();
 };
 
 window.prevQuestion = function() {
+  if (window.autoAdvanceTimer) clearTimeout(window.autoAdvanceTimer);
   if (state.currentQuestion > 0) {
     state.currentQuestion--;
     renderQuestion();
@@ -501,6 +503,7 @@ window.prevQuestion = function() {
 };
 
 window.nextQuestion = function() {
+  if (window.autoAdvanceTimer) clearTimeout(window.autoAdvanceTimer);
   const qs = state.questions[state.currentSubtest];
   if (state.currentQuestion < qs.length - 1) {
     state.currentQuestion++;
@@ -511,6 +514,7 @@ window.nextQuestion = function() {
 
 // ===== Answer Selection =====
 window.selectAnswer = function(answer) {
+  if (window.autoAdvanceTimer) clearTimeout(window.autoAdvanceTimer);
   state.answers[state.currentSubtest][state.currentQuestion] = answer;
   renderQuestion();
   buildQuestionGrid();
@@ -520,7 +524,7 @@ window.selectAnswer = function(answer) {
   // Auto-advance after short delay
   const qs = state.questions[state.currentSubtest];
   if (state.currentQuestion < qs.length - 1) {
-    setTimeout(() => {
+    window.autoAdvanceTimer = setTimeout(() => {
       state.currentQuestion++;
       renderQuestion();
       buildQuestionGrid();
