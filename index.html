@@ -112,6 +112,149 @@
       animation: fadeInUp 0.7s 0.3s ease both;
     }
 
+    /* ===== HERO NEW UI ELEMENTS ===== */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black 10%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(40px); }
+    }
+
+    .floating-badge {
+      position: absolute;
+      background: rgba(15, 15, 30, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 10px 16px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: float 6s ease-in-out infinite;
+      z-index: 2;
+    }
+    .fb-icon { font-size: 1.25rem; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .fb-1 { top: 25%; left: 8%; animation-delay: 0s; }
+    .fb-2 { top: 45%; right: 8%; animation-delay: -3s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .btn-glowing {
+      position: relative;
+      background: var(--gradient-primary);
+      overflow: hidden;
+      border: none;
+      z-index: 1;
+      padding: 16px 32px;
+      border-radius: 30px;
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 10px 20px rgba(99,102,241,0.3);
+    }
+    .btn-glowing::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899, #6366f1);
+      background-size: 300%;
+      z-index: -2;
+      animation: glowBorder 4s linear infinite;
+      border-radius: inherit;
+    }
+    .btn-glowing::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: #11112b;
+      border-radius: inherit;
+      z-index: -1;
+      transition: var(--transition);
+    }
+    .btn-glowing:hover::after {
+      background: #1e1e40;
+    }
+    @keyframes glowBorder {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    .hero-mockup {
+      margin-top: 60px;
+      width: 100%;
+      max-width: 900px;
+      height: 280px;
+      background: rgba(15, 15, 30, 0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-bottom: none;
+      border-radius: 20px 20px 0 0;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -20px 50px rgba(99, 102, 241, 0.15);
+      overflow: hidden;
+      animation: fadeInUp 1s 0.5s ease both;
+      display: flex;
+      flex-direction: column;
+    }
+    .mockup-header {
+      height: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 6px;
+      background: rgba(0,0,0,0.2);
+    }
+    .mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .mockup-dot.red { background: #ef4444; }
+    .mockup-dot.yellow { background: #eab308; }
+    .mockup-dot.green { background: #22c55e; }
+    
+    .mockup-body {
+      flex: 1;
+      display: flex;
+      padding: 24px;
+      gap: 24px;
+    }
+    .mockup-sidebar {
+      width: 160px;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-right: 20px;
+    }
+    .mockup-line { height: 14px; background: rgba(255,255,255,0.05); border-radius: 6px; width: 100%; }
+    .mockup-line.short { width: 60%; }
+    .mockup-content { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .mockup-card { background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); padding: 20px; display: flex; flex-direction: column; }
+    .mockup-card-title { height: 14px; width: 40%; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 16px; }
+    .mockup-chart { margin-top: auto; height: 80px; background: linear-gradient(180deg, rgba(99,102,241,0.2) 0%, transparent 100%); border-top: 3px solid var(--primary); border-radius: 6px 6px 0 0; position: relative; }
+    .mockup-chart::after { content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 60%; background: linear-gradient(180deg, rgba(16,185,129,0.2) 0%, transparent 100%); border-top: 3px solid #10b981; border-radius: 6px 6px 0 0; }
+    .mockup-overlay-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(180deg, transparent 0%, var(--bg-primary) 100%); }
+
     /* ===== COUNTDOWN ===== */
     .countdown-section {
       padding: 48px 20px;
@@ -569,6 +712,14 @@
       .form-card {
         padding: 24px;
       }
+
+      /* Hero Mobile Updates */
+      .hero { padding-top: 120px; }
+      .floating-badge { display: none; } /* Hide floating badges on mobile to prevent clutter */
+      .hero-mockup { height: 180px; margin-top: 40px; }
+      .mockup-sidebar { display: none; } /* Hide sidebar on mobile */
+      .mockup-content { grid-template-columns: 1fr; }
+      .mockup-card:nth-child(2) { display: none; } /* Only show 1 card on mobile */
     }
   </style>
 </head>
@@ -597,7 +748,26 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="hero">
+    <!-- Grid Background -->
+    <div class="hero-grid"></div>
+
     <div class="hero-content">
+      <!-- Floating Badges -->
+      <div class="floating-badge fb-1">
+        <div class="fb-icon">🤖</div>
+        <div>
+          <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;">Keamanan Ujian</div>
+          <div style="color:#fff;">Anti-Cheat Aktif</div>
+        </div>
+      </div>
+      <div class="floating-badge fb-2">
+        <div class="fb-icon">📊</div>
+        <div>
+          <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;">Bank Soal</div>
+          <div style="color:#fff;">1.020+ Soal Unik</div>
+        </div>
+      </div>
+
       <div class="hero-badge">
         <span class="dot"></span>
         Platform Tryout SNBT Terlengkap 2026
@@ -608,13 +778,45 @@
         timer otomatis, analisis mendalam, dan prediksi peluang masuk universitas favorit kamu.
       </p>
       <div class="hero-cta">
-        <a href="#register" class="btn btn-primary btn-lg">
+        <a href="#register" class="btn-glowing">
           🚀 Mulai Tryout Gratis
         </a>
         <a href="#how" class="btn btn-secondary btn-lg">
           📖 Cara Kerja
         </a>
       </div>
+    </div>
+
+    <!-- Abstract Dashboard Mockup -->
+    <div class="hero-mockup">
+      <div class="mockup-header">
+        <div class="mockup-dot red"></div>
+        <div class="mockup-dot yellow"></div>
+        <div class="mockup-dot green"></div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="mockup-line"></div>
+          <div class="mockup-line short"></div>
+          <div class="mockup-line"></div>
+          <div class="mockup-line short"></div>
+        </div>
+        <div class="mockup-content">
+          <div class="mockup-card">
+            <div class="mockup-card-title"></div>
+            <div class="mockup-line" style="margin-bottom:8px"></div>
+            <div class="mockup-line short"></div>
+            <div class="mockup-chart"></div>
+          </div>
+          <div class="mockup-card">
+            <div class="mockup-card-title"></div>
+            <div class="mockup-line" style="margin-bottom:8px"></div>
+            <div class="mockup-line short"></div>
+            <div class="mockup-chart" style="border-top-color:#ec4899; background: linear-gradient(180deg, rgba(236,72,153,0.2) 0%, transparent 100%);"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-overlay-fade"></div>
     </div>
   </section>
 
