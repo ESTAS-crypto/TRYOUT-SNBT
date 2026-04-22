@@ -132,8 +132,8 @@ Platform ini dilengkapi sistem anti-kecurangan berlapis:
 - [x] Leaderboard & tracking progress
 - [x] Analisis hasil mendalam
 - [x] Timer realistis 4.5 jam
-- [ ] 1.020 soal unik (coming soon)
-- [ ] Mode latihan per subtes
+- [x] 1.020 soal unik 
+- [ ] Mode latihan per subtes (coming soon)
 - [ ] Export hasil ke PDF
 - [ ] Dark/Light mode toggle
 
