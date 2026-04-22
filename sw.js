@@ -4,7 +4,7 @@
  * - Blokir request eksternal saat ujian berlangsung
  */
 
-const CACHE_NAME = 'snbt-pro-v8';
+const CACHE_NAME = 'snbt-pro-v9';
 const EXAM_FLAG_KEY = 'snbt_exam_active';
 
 // Semua file yang perlu di-cache
