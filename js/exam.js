@@ -372,6 +372,8 @@ function startTimers() {
 }
 
 function tickTimer() {
+  if (state.isTransitioning) return;
+
   state.globalTimer = Math.max(0, state.globalTimer - 1);
   state.subtestTimers[state.currentSubtest] = Math.max(0, state.subtestTimers[state.currentSubtest] - 1);
 
@@ -379,6 +381,7 @@ function tickTimer() {
   saveState();
 
   if (state.subtestTimers[state.currentSubtest] <= 0) {
+    state.isTransitioning = true;
     handleSubtestTimeUp();
   } else if (state.globalTimer <= 0) {
     finishExam();
@@ -416,6 +419,7 @@ function handleSubtestTimeUp() {
 }
 
 window.advanceToNextSubtest = function() {
+  state.isTransitioning = true;
   const idx = state.subtestOrder.indexOf(state.currentSubtest);
   if (!state.completedSubtests.includes(state.currentSubtest)) {
     state.completedSubtests.push(state.currentSubtest);
@@ -464,6 +468,7 @@ function showSubtestTransition(nextSub) {
 }
 
 window.startNextSubtest = function(sub) {
+  state.isTransitioning = false;
   state.currentSubtest = sub;
   state.currentQuestion = 0;
   updateSubtestBadge();
