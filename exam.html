@@ -135,10 +135,26 @@
     </div>
   </main>
 
+  <!-- ===== SCRATCHPAD OVERLAY ===== -->
+  <div id="scratchpad-overlay" class="scratchpad-hidden">
+    <div class="scratchpad-toolbar">
+      <div class="sp-tool-group">
+        <button id="sp-pen-btn" class="sp-btn active" title="Pena">✏️ Pena</button>
+        <button id="sp-eraser-btn" class="sp-btn" title="Penghapus">🧹 Hapus</button>
+      </div>
+      <div class="sp-tool-group">
+        <button id="sp-clear-btn" class="sp-btn danger" title="Hapus Semua">🗑️ Bersihkan</button>
+        <button id="sp-close-btn" class="sp-btn" title="Tutup">❌ Tutup</button>
+      </div>
+    </div>
+    <canvas id="scratchpad-canvas"></canvas>
+  </div>
+
   <!-- ===== FOOTER ===== -->
   <footer class="exam-footer">
     <div class="footer-nav">
       <button class="btn btn-secondary btn-sm" onclick="prevQuestion()">← Sebelumnya</button>
+      <button class="btn btn-secondary btn-sm" id="toggle-scratchpad-btn" onclick="toggleScratchpad()" style="margin-left: 10px; border-color: rgba(99,102,241,0.5); color: #818cf8;">✏️ Oret-oretan</button>
     </div>
 
     <div class="footer-progress-info" id="footer-progress">

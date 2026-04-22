@@ -117,6 +117,9 @@ function setupUI() {
 
   // Update violation display
   updateViolationBadge();
+
+  // Init scratchpad
+  if (typeof initScratchpad === 'function') initScratchpad();
 }
 
 function buildSubtestNav() {
@@ -613,6 +616,10 @@ function renderQuestion() {
   `;
 
   buildQuestionGrid();
+  
+  if (window.spIsVisible && typeof loadScratchpad === 'function') {
+    loadScratchpad();
+  }
 }
 
 // ===== Question Grid (Sidebar) =====
@@ -788,3 +795,180 @@ function showOfflineBadge(active) {
     setTimeout(() => badge.remove(), 400);
   }
 }
+
+// ===== Scratchpad Logic =====
+let spCanvas, spCtx;
+let spIsDrawing = false;
+let spMode = 'pen'; // 'pen' or 'eraser'
+let spColor = '#818cf8';
+let spSize = 3;
+window.spIsVisible = false;
+
+function initScratchpad() {
+  spCanvas = document.getElementById('scratchpad-canvas');
+  if (!spCanvas) return;
+  spCtx = spCanvas.getContext('2d', { willReadFrequently: true });
+  
+  // Resize canvas
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // Mouse Events
+  spCanvas.addEventListener('mousedown', startDrawing);
+  spCanvas.addEventListener('mousemove', draw);
+  spCanvas.addEventListener('mouseup', stopDrawing);
+  spCanvas.addEventListener('mouseout', stopDrawing);
+
+  // Touch Events (for tablets/phones)
+  spCanvas.addEventListener('touchstart', startDrawing, {passive: false});
+  spCanvas.addEventListener('touchmove', draw, {passive: false});
+  spCanvas.addEventListener('touchend', stopDrawing);
+
+  // Tool buttons
+  const penBtn = document.getElementById('sp-pen-btn');
+  const eraserBtn = document.getElementById('sp-eraser-btn');
+  if(penBtn) penBtn.addEventListener('click', () => setSpMode('pen'));
+  if(eraserBtn) eraserBtn.addEventListener('click', () => setSpMode('eraser'));
+  
+  const clearBtn = document.getElementById('sp-clear-btn');
+  if(clearBtn) clearBtn.addEventListener('click', clearScratchpad);
+  
+  const closeBtn = document.getElementById('sp-close-btn');
+  if(closeBtn) closeBtn.addEventListener('click', toggleScratchpad);
+}
+
+function resizeCanvas() {
+  if (!spCanvas || !window.spIsVisible) return;
+  const rect = spCanvas.parentElement.getBoundingClientRect();
+  
+  // Save current drawing to restore after resize
+  let tempCanvas = null;
+  if (spCanvas.width > 0 && spCanvas.height > 0) {
+    tempCanvas = document.createElement('canvas');
+    tempCanvas.width = spCanvas.width;
+    tempCanvas.height = spCanvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(spCanvas, 0, 0);
+  }
+
+  spCanvas.width = rect.width;
+  spCanvas.height = rect.height;
+
+  // Restore drawing
+  if (tempCanvas) {
+    spCtx.drawImage(tempCanvas, 0, 0);
+  }
+}
+
+window.toggleScratchpad = function() {
+  const overlay = document.getElementById('scratchpad-overlay');
+  const btn = document.getElementById('toggle-scratchpad-btn');
+  if (!overlay) return;
+
+  window.spIsVisible = !window.spIsVisible;
+  if (window.spIsVisible) {
+    overlay.classList.remove('scratchpad-hidden');
+    if (btn) {
+      btn.classList.add('active');
+      btn.innerHTML = '❌ Tutup Oretan';
+    }
+    resizeCanvas();
+    loadScratchpad();
+  } else {
+    saveScratchpad();
+    overlay.classList.add('scratchpad-hidden');
+    if (btn) {
+      btn.classList.remove('active');
+      btn.innerHTML = '✏️ Oret-oretan';
+    }
+  }
+};
+
+function getSpPos(e) {
+  const rect = spCanvas.getBoundingClientRect();
+  let clientX = e.clientX;
+  let clientY = e.clientY;
+  if (e.touches && e.touches.length > 0) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  }
+  return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+function startDrawing(e) {
+  if (!window.spIsVisible) return;
+  e.preventDefault(); // Prevent scrolling on touch
+  spIsDrawing = true;
+  const pos = getSpPos(e);
+  spCtx.beginPath();
+  spCtx.moveTo(pos.x, pos.y);
+  // Draw a dot if just clicking
+  spCtx.lineTo(pos.x, pos.y);
+  applySpStyles();
+  spCtx.stroke();
+}
+
+function draw(e) {
+  if (!spIsDrawing || !window.spIsVisible) return;
+  e.preventDefault();
+  const pos = getSpPos(e);
+  spCtx.lineTo(pos.x, pos.y);
+  applySpStyles();
+  spCtx.stroke();
+}
+
+function stopDrawing(e) {
+  if (!spIsDrawing) return;
+  spIsDrawing = false;
+  saveScratchpad();
+}
+
+function applySpStyles() {
+  spCtx.strokeStyle = spMode === 'eraser' ? 'rgba(0,0,0,1)' : spColor;
+  spCtx.lineWidth = spMode === 'eraser' ? 25 : spSize;
+  spCtx.lineCap = 'round';
+  spCtx.lineJoin = 'round';
+  
+  if (spMode === 'eraser') {
+    spCtx.globalCompositeOperation = 'destination-out';
+  } else {
+    spCtx.globalCompositeOperation = 'source-over';
+  }
+}
+
+window.setSpMode = function(mode) {
+  spMode = mode;
+  const penBtn = document.getElementById('sp-pen-btn');
+  const eraserBtn = document.getElementById('sp-eraser-btn');
+  if(penBtn) penBtn.classList.toggle('active', mode === 'pen');
+  if(eraserBtn) eraserBtn.classList.toggle('active', mode === 'eraser');
+};
+
+window.clearScratchpad = function() {
+  if (!spCtx) return;
+  spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height);
+  saveScratchpad();
+};
+
+function saveScratchpad() {
+  if (!spCanvas || !window.spIsVisible) return;
+  if (!state.scratchpads) state.scratchpads = {};
+  if (!state.scratchpads[state.currentSubtest]) state.scratchpads[state.currentSubtest] = [];
+  
+  // Save as dataURL for the current question
+  state.scratchpads[state.currentSubtest][state.currentQuestion] = spCanvas.toDataURL();
+}
+
+window.loadScratchpad = function() {
+  if (!spCanvas || !spCtx) return;
+  // Clear first
+  spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height);
+  
+  if (state.scratchpads && state.scratchpads[state.currentSubtest] && state.scratchpads[state.currentSubtest][state.currentQuestion]) {
+    const img = new Image();
+    img.onload = () => {
+      spCtx.drawImage(img, 0, 0);
+    };
+    img.src = state.scratchpads[state.currentSubtest][state.currentQuestion];
+  }
+};
