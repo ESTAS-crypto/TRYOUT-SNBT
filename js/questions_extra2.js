@@ -1312,6 +1312,8 @@ function getShuffledQuestions() {
       ...(QUESTION_BANK_EXTRA[key]  || []),
       ...(QUESTION_BANK_EXTRA2[key] || []),
       ...(typeof QUESTION_BANK_EXTRA3 !== 'undefined' && QUESTION_BANK_EXTRA3[key] ? QUESTION_BANK_EXTRA3[key] : []),
+      ...(typeof QUESTION_BANK_EXTRA4 !== 'undefined' && QUESTION_BANK_EXTRA4[key] ? QUESTION_BANK_EXTRA4[key] : []),
+      ...(typeof QUESTION_BANK_EXTRA5 !== 'undefined' && QUESTION_BANK_EXTRA5[key] ? QUESTION_BANK_EXTRA5[key] : []),
     ];
     const shuffled = shuffleArray(allQ);
     const needed   = SUBTEST_INFO[key].questions;
