@@ -403,6 +403,12 @@ const QUESTION_BANK = {
     {id:'PK-18', question:'Jika harga A:B = 3:4 dan total A+B = Rp 280.000, harga B adalah:', options:['A. Rp 100.000','B. Rp 120.000','C. Rp 140.000','D. Rp 160.000','E. Rp 180.000'], answer:'D', explanation:'B = (4/7) × 280.000 = Rp 160.000'},
     {id:'PK-19', question:'Data manakah yang memiliki simpangan baku terkecil?', options:['A. 1, 5, 9, 13','B. 5, 5, 5, 5','C. 2, 4, 6, 8','D. 10, 20, 30, 40','E. 1, 1, 9, 9'], answer:'B', explanation:'Data 5,5,5,5 tidak memiliki variasi → simpangan baku = 0 (terkecil)'},
     {id:'PK-20', question:'Sebuah segitiga siku-siku memiliki sisi tegak 9 cm dan 12 cm. Panjang hipotenusa adalah:', options:['A. 13 cm','B. 14 cm','C. 15 cm','D. 16 cm','E. 18 cm'], answer:'C', explanation:'h = √(9²+12²) = √(81+144) = √225 = 15 cm'},
+    // ========== SOAL ISIAN PK ==========
+    {id:'PK-FI-01', type:'fill_in', question:'Berapa hasil dari 25% × 1.000?\n\nKetik jawaban berupa angka.', answer:'250', explanation:'25% × 1.000 = 0,25 × 1.000 = 250'},
+    {id:'PK-FI-02', type:'fill_in', question:'Jika x + 7 = 15, maka nilai x adalah ...\n\nKetik jawaban berupa angka.', answer:'8', explanation:'x = 15 − 7 = 8'},
+    {id:'PK-FI-03', type:'fill_in', question:'Sebuah persegi panjang memiliki panjang 12 cm dan lebar 5 cm. Berapa luas persegi panjang tersebut (dalam cm²)?\n\nKetik jawaban berupa angka.', answer:'60', explanation:'Luas = p × l = 12 × 5 = 60 cm²'},
+    {id:'PK-FI-04', type:'fill_in', question:'Rata-rata dari bilangan 12, 18, 24, 30, dan 36 adalah ...\n\nKetik jawaban berupa angka.', answer:'24', explanation:'(12+18+24+30+36)/5 = 120/5 = 24'},
+    {id:'PK-FI-05', type:'fill_in', question:'Sebuah barang seharga Rp 200.000 dijual dengan diskon 15%. Berapa harga setelah diskon (dalam ribuan)?\n\nContoh jawaban: 170000', answer:'170000', explanation:'Diskon = 15% × 200.000 = 30.000. Harga = 200.000 − 30.000 = Rp 170.000'},
   ],
 
   LBI: [
@@ -851,6 +857,12 @@ const QUESTION_BANK = {
     {id:'PM-28', question:'Titik potong garis y = 2x − 4 dengan sumbu x adalah:', options:['A. (1, 0)','B. (2, 0)','C. (4, 0)','D. (0, −4)','E. (3, 0)'], answer:'B', explanation:'Saat y=0: 0 = 2x−4 → x=2. Titik potong: (2, 0)'},
     {id:'PM-29', question:'Sebuah segitiga siku-siku memiliki sisi 5, 12, 13. Nilai tan sudut terkecil (di depan sisi 5) adalah:', options:['A. 5/13','B. 12/13','C. 5/12','D. 12/5','E. 13/12'], answer:'C', explanation:'Sudut terkecil berlawanan sisi terpendek (5). tan = sisi depan/sisi samping = 5/12'},
     {id:'PM-30', question:'Variansi dari data: 2, 4, 4, 4, 5, 5, 7, 9 adalah:', options:['A. 2','B. 4','C. 4,5','D. 3','E. 2,5'], answer:'B', explanation:'Rata-rata = 40/8=5. Variansi = [(9+1+1+1+0+0+4+16)/8] = 32/8 = 4'},
+    // ========== SOAL ISIAN PM ==========
+    {id:'PM-FI-01', type:'fill_in', question:'Berapa nilai dari 2⁵?\n\nKetik jawaban berupa angka.', answer:'32', explanation:'2⁵ = 2×2×2×2×2 = 32'},
+    {id:'PM-FI-02', type:'fill_in', question:'Jika 3x − 9 = 0, maka nilai x adalah ...\n\nKetik jawaban berupa angka.', answer:'3', explanation:'3x = 9 → x = 9/3 = 3'},
+    {id:'PM-FI-03', type:'fill_in', question:'Berapa nilai dari √144?\n\nKetik jawaban berupa angka.', answer:'12', explanation:'√144 = 12 (karena 12² = 144)'},
+    {id:'PM-FI-04', type:'fill_in', question:'Jumlah sudut dalam sebuah segitiga adalah ... derajat.\n\nKetik jawaban berupa angka.', answer:'180', explanation:'Jumlah sudut dalam segitiga selalu 180°'},
+    {id:'PM-FI-05', type:'fill_in', question:'Jika log₁₀(x) = 2, maka nilai x adalah ...\n\nKetik jawaban berupa angka.', answer:'100', explanation:'log₁₀(x) = 2 → x = 10² = 100'},
   ],
 };
 

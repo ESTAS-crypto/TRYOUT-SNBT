@@ -150,11 +150,49 @@
     <canvas id="scratchpad-canvas"></canvas>
   </div>
 
+  <!-- ===== CALCULATOR WIDGET ===== -->
+  <div class="calculator-widget" id="calculator-widget">
+    <div class="calc-header" id="calc-drag-handle">
+      <div class="calc-header-title"><span>🔢</span> Kalkulator</div>
+      <button class="calc-close-btn" onclick="toggleCalculator()" title="Tutup">✕</button>
+    </div>
+    <div class="calc-display">
+      <div class="calc-expression" id="calc-expression"></div>
+      <div class="calc-result" id="calc-result">0</div>
+    </div>
+    <div class="calc-grid">
+      <button class="calc-btn clear" onclick="calcAction('AC')">AC</button>
+      <button class="calc-btn func" onclick="calcAction('toggle')">±</button>
+      <button class="calc-btn func" onclick="calcAction('backspace')">⌫</button>
+      <button class="calc-btn operator" onclick="calcAction('op','÷')">÷</button>
+
+      <button class="calc-btn" onclick="calcAction('num','7')">7</button>
+      <button class="calc-btn" onclick="calcAction('num','8')">8</button>
+      <button class="calc-btn" onclick="calcAction('num','9')">9</button>
+      <button class="calc-btn operator" onclick="calcAction('op','×')">×</button>
+
+      <button class="calc-btn" onclick="calcAction('num','4')">4</button>
+      <button class="calc-btn" onclick="calcAction('num','5')">5</button>
+      <button class="calc-btn" onclick="calcAction('num','6')">6</button>
+      <button class="calc-btn operator" onclick="calcAction('op','−')">−</button>
+
+      <button class="calc-btn" onclick="calcAction('num','1')">1</button>
+      <button class="calc-btn" onclick="calcAction('num','2')">2</button>
+      <button class="calc-btn" onclick="calcAction('num','3')">3</button>
+      <button class="calc-btn operator" onclick="calcAction('op','+')">+</button>
+
+      <button class="calc-btn zero" onclick="calcAction('num','0')">0</button>
+      <button class="calc-btn" onclick="calcAction('num','.')">.</button>
+      <button class="calc-btn equals" onclick="calcAction('equals')">=</button>
+    </div>
+  </div>
+
   <!-- ===== FOOTER ===== -->
   <footer class="exam-footer">
     <div class="footer-nav">
       <button class="btn btn-secondary btn-sm" onclick="prevQuestion()">← Sebelumnya</button>
       <button class="btn btn-secondary btn-sm" id="toggle-scratchpad-btn" onclick="toggleScratchpad()" style="margin-left: 10px; border-color: rgba(99,102,241,0.5); color: #818cf8;">✏️ Oret-oretan</button>
+      <button class="calc-toggle-btn" id="calc-toggle-btn" onclick="toggleCalculator()">🔢 Kalkulator</button>
     </div>
 
     <div class="footer-progress-info" id="footer-progress">

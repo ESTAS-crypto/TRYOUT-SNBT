@@ -316,12 +316,19 @@ function startAntiCheat() {
       return;
     }
     if (e.key === 'PrintScreen') { e.preventDefault(); return; }
+    // Skip shortcuts when typing in fill-in input or calculator
+    const activeEl = document.activeElement;
+    const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+    if (isTyping) return;
     // Navigation shortcuts
     if (e.key === 'ArrowRight') nextQuestion();
     if (e.key === 'ArrowLeft') prevQuestion();
     if (e.key >= '1' && e.key <= '5') {
-      const opts = ['A','B','C','D','E'];
-      selectAnswer(opts[parseInt(e.key)-1]);
+      const q = state.questions[state.currentSubtest]?.[state.currentQuestion];
+      if (q && q.type !== 'fill_in') {
+        const opts = ['A','B','C','D','E'];
+        selectAnswer(opts[parseInt(e.key)-1]);
+      }
     }
   });
 
@@ -574,6 +581,7 @@ function renderQuestion() {
   const answer = state.answers[sub][idx];
   const isFlagged = state.flags[sub][idx];
   const optionLetters = ['A','B','C','D','E'];
+  const isFillIn = q.type === 'fill_in';
 
   updateSubtestBadge();
   updateFooterProgress();
@@ -585,16 +593,42 @@ function renderQuestion() {
     </div>
   ` : '';
 
-  const optionsHtml = q.options.map((opt, i) => {
-    const letter = optionLetters[i];
-    const isSelected = answer === letter;
-    return `
-      <button class="option-btn ${isSelected ? 'selected' : ''}" onclick="selectAnswer('${letter}')">
-        <span class="option-label">${letter}</span>
-        <span class="option-text">${escapeHtml(opt.replace(/^[A-E]\.\s*/,''))}</span>
-      </button>
+  let answerAreaHtml = '';
+
+  if (isFillIn) {
+    // Fill-in (typed answer) question
+    const escapedAnswer = answer ? escapeHtml(String(answer)) : '';
+    answerAreaHtml = `
+      <div class="fill-in-container">
+        <div class="fill-in-label">
+          ✏️ Ketik Jawaban
+          <span class="fill-in-badge">ISIAN</span>
+        </div>
+        <div class="fill-in-input-wrapper">
+          <input type="text" class="fill-in-input ${answer ? 'has-value' : ''}" id="fill-in-input"
+            placeholder="Ketik jawabanmu di sini..."
+            value="${escapedAnswer}"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+          />
+          <button class="fill-in-save-btn" onclick="saveFillInAnswer()">💾 Simpan</button>
+        </div>
+        <div class="fill-in-hint">💡 Ketik angka atau teks jawaban, lalu klik Simpan atau tekan Enter</div>
+      </div>
     `;
-  }).join('');
+  } else {
+    // Multiple choice question
+    const optionsHtml = q.options.map((opt, i) => {
+      const letter = optionLetters[i];
+      const isSelected = answer === letter;
+      return `
+        <button class="option-btn ${isSelected ? 'selected' : ''}" onclick="selectAnswer('${letter}')">
+          <span class="option-label">${letter}</span>
+          <span class="option-text">${escapeHtml(opt.replace(/^[A-E]\.\s*/,''))}</span>
+        </button>
+      `;
+    }).join('');
+    answerAreaHtml = `<div class="options-list">${optionsHtml}</div>`;
+  }
 
   main.innerHTML = `
     <div class="question-container" id="question-container">
@@ -603,9 +637,7 @@ function renderQuestion() {
         <span class="question-number-badge">Soal ${idx + 1} / ${qs.length}</span>
         <div class="question-text">${escapeHtml(q.question)}</div>
       </div>
-      <div class="options-list">
-        ${optionsHtml}
-      </div>
+      ${answerAreaHtml}
       <div class="question-actions">
         <button class="flag-btn ${isFlagged ? 'active' : ''}" onclick="toggleFlag()">
           ${isFlagged ? '🚩 Ragu-ragu (Aktif)' : '🏳️ Tandai Ragu-ragu'}
@@ -615,12 +647,46 @@ function renderQuestion() {
     </div>
   `;
 
+  // Fill-in input event listeners
+  if (isFillIn) {
+    const input = document.getElementById('fill-in-input');
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveFillInAnswer();
+        }
+      });
+      // Auto-focus the input
+      setTimeout(() => input.focus(), 100);
+    }
+  }
+
   buildQuestionGrid();
   
   if (window.spIsVisible && typeof loadScratchpad === 'function') {
     loadScratchpad();
   }
 }
+
+// ===== Fill-in Answer =====
+window.saveFillInAnswer = function() {
+  const input = document.getElementById('fill-in-input');
+  if (!input) return;
+  const value = input.value.trim();
+  if (value) {
+    state.answers[state.currentSubtest][state.currentQuestion] = value;
+    input.classList.add('has-value');
+    showToast('✅ Jawaban disimpan!', 'success', 1500);
+  } else {
+    state.answers[state.currentSubtest][state.currentQuestion] = null;
+    input.classList.remove('has-value');
+  }
+  buildQuestionGrid();
+  buildSubtestNav();
+  updateFooterProgress();
+  saveState();
+};
 
 // ===== Question Grid (Sidebar) =====
 function buildQuestionGrid() {
@@ -972,3 +1038,160 @@ window.loadScratchpad = function() {
     img.src = state.scratchpads[state.currentSubtest][state.currentQuestion];
   }
 };
+
+// ===== Calculator Logic =====
+let calcState = {
+  current: '0',
+  previous: null,
+  operator: null,
+  resetNext: false,
+  expression: '',
+};
+
+let calcVisible = false;
+
+window.toggleCalculator = function() {
+  calcVisible = !calcVisible;
+  const widget = document.getElementById('calculator-widget');
+  const btn = document.getElementById('calc-toggle-btn');
+  if (widget) widget.classList.toggle('visible', calcVisible);
+  if (btn) btn.classList.toggle('active', calcVisible);
+};
+
+window.calcAction = function(type, value) {
+  switch(type) {
+    case 'num':
+      if (calcState.resetNext) {
+        calcState.current = '';
+        calcState.resetNext = false;
+      }
+      // Prevent multiple decimals
+      if (value === '.' && calcState.current.includes('.')) return;
+      // Prevent leading zeros
+      if (calcState.current === '0' && value !== '.') {
+        calcState.current = value;
+      } else {
+        calcState.current += value;
+      }
+      break;
+
+    case 'op':
+      if (calcState.operator && !calcState.resetNext) {
+        calcPerformOp();
+      }
+      calcState.previous = parseFloat(calcState.current);
+      calcState.operator = value;
+      calcState.expression = `${calcFormatNum(calcState.previous)} ${value}`;
+      calcState.resetNext = true;
+      break;
+
+    case 'equals':
+      if (calcState.operator) {
+        calcState.expression = `${calcFormatNum(calcState.previous)} ${calcState.operator} ${calcState.current} =`;
+        calcPerformOp();
+        calcState.operator = null;
+        calcState.previous = null;
+        calcState.resetNext = true;
+      }
+      break;
+
+    case 'AC':
+      calcState.current = '0';
+      calcState.previous = null;
+      calcState.operator = null;
+      calcState.resetNext = false;
+      calcState.expression = '';
+      break;
+
+    case 'toggle':
+      if (calcState.current !== '0') {
+        calcState.current = calcState.current.startsWith('-')
+          ? calcState.current.slice(1)
+          : '-' + calcState.current;
+      }
+      break;
+
+    case 'backspace':
+      if (calcState.resetNext) {
+        calcState.current = '0';
+        calcState.resetNext = false;
+      } else if (calcState.current.length > 1) {
+        calcState.current = calcState.current.slice(0, -1);
+      } else {
+        calcState.current = '0';
+      }
+      break;
+  }
+  calcUpdateDisplay();
+};
+
+function calcPerformOp() {
+  const a = calcState.previous;
+  const b = parseFloat(calcState.current);
+  let result = 0;
+  switch(calcState.operator) {
+    case '+': result = a + b; break;
+    case '−': result = a - b; break;
+    case '×': result = a * b; break;
+    case '÷': result = b !== 0 ? a / b : 0; break;
+  }
+  // Avoid floating point weirdness
+  calcState.current = String(parseFloat(result.toPrecision(12)));
+}
+
+function calcFormatNum(n) {
+  if (n === null || n === undefined) return '0';
+  const s = String(n);
+  if (s.length > 14) return parseFloat(n).toExponential(6);
+  return s;
+}
+
+function calcUpdateDisplay() {
+  const exprEl = document.getElementById('calc-expression');
+  const resultEl = document.getElementById('calc-result');
+  if (exprEl) exprEl.textContent = calcState.expression;
+  if (resultEl) {
+    let display = calcState.current;
+    if (display.length > 14) display = parseFloat(display).toExponential(6);
+    resultEl.textContent = display;
+  }
+}
+
+// ===== Calculator Dragging =====
+(function initCalcDrag() {
+  let isDragging = false, startX, startY, startLeft, startTop;
+
+  document.addEventListener('mousedown', (e) => {
+    const handle = document.getElementById('calc-drag-handle');
+    if (!handle || !handle.contains(e.target)) return;
+    if (e.target.closest('.calc-close-btn')) return;
+    const widget = document.getElementById('calculator-widget');
+    if (!widget) return;
+    isDragging = true;
+    const rect = widget.getBoundingClientRect();
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = rect.left;
+    startTop = rect.top;
+    widget.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const widget = document.getElementById('calculator-widget');
+    if (!widget) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    widget.style.left = (startLeft + dx) + 'px';
+    widget.style.top = (startTop + dy) + 'px';
+    widget.style.right = 'auto';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    const widget = document.getElementById('calculator-widget');
+    if (widget) widget.style.transition = '';
+  });
+})();

@@ -1315,9 +1315,19 @@ function getShuffledQuestions() {
       ...(typeof QUESTION_BANK_EXTRA4 !== 'undefined' && QUESTION_BANK_EXTRA4[key] ? QUESTION_BANK_EXTRA4[key] : []),
       ...(typeof QUESTION_BANK_EXTRA5 !== 'undefined' && QUESTION_BANK_EXTRA5[key] ? QUESTION_BANK_EXTRA5[key] : []),
     ];
-    const shuffled = shuffleArray(allQ);
-    const needed   = SUBTEST_INFO[key].questions;
-    result[key]    = shuffled.slice(0, needed);
+    const needed = SUBTEST_INFO[key].questions;
+
+    // Separate fill-in and multiple-choice questions
+    const fillInQ = allQ.filter(q => q.type === 'fill_in');
+    const mcQ = allQ.filter(q => q.type !== 'fill_in');
+
+    // Always include fill-in questions, fill remaining with shuffled MC
+    const shuffledFI = shuffleArray(fillInQ);
+    const shuffledMC = shuffleArray(mcQ);
+    const fiCount = Math.min(shuffledFI.length, Math.max(0, needed));
+    const mcCount = Math.max(0, needed - fiCount);
+    const combined = [...shuffledMC.slice(0, mcCount), ...shuffledFI.slice(0, fiCount)];
+    result[key] = shuffleArray(combined);
   }
   return result;
 }

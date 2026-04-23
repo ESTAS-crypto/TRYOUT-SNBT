@@ -52,6 +52,13 @@ function calculateScores(data) {
     qs.forEach((q, i) => {
       const given = answers[i];
       if (!given) { unanswered++; }
+      else if (q.type === 'fill_in') {
+        // Fill-in: compare trimmed, case-insensitive
+        const givenClean = String(given).trim().toLowerCase().replace(/\s+/g, '');
+        const answerClean = String(q.answer).trim().toLowerCase().replace(/\s+/g, '');
+        if (givenClean === answerClean) { correct++; }
+        else { wrong++; }
+      }
       else if (given === q.answer) { correct++; }
       else { wrong++; }
     });
@@ -347,7 +354,14 @@ function renderReview(data) {
     const answers = data.answers[sub] || [];
     qs.forEach((q, i) => {
       const given = answers[i];
-      const isCorrect = given === q.answer;
+      let isCorrect = false;
+      if (given) {
+        if (q.type === 'fill_in') {
+          isCorrect = String(given).trim().toLowerCase().replace(/\s+/g, '') === String(q.answer).trim().toLowerCase().replace(/\s+/g, '');
+        } else {
+          isCorrect = given === q.answer;
+        }
+      }
       allItems.push({
         sub, idx: i, q, given,
         isCorrect,
@@ -381,6 +395,15 @@ function applyReviewFilter() {
   container.innerHTML = filtered.slice(0, 50).map((item, renderIdx) => {
     const status = item.isUnanswered ? 'unanswered' : item.isCorrect ? 'correct' : 'wrong';
     const statusIcon = item.isUnanswered ? '⭕' : item.isCorrect ? '✅' : '❌';
+    const isFillIn = item.q.type === 'fill_in';
+    const givenDisplay = item.isUnanswered
+      ? '⭕ Tidak Dijawab'
+      : isFillIn
+        ? `Jawabanmu: "${escapeHtml(String(item.given))}"`
+        : `Jawabanmu: ${item.given}`;
+    const correctDisplay = isFillIn
+      ? `✅ Kunci: "${escapeHtml(String(item.q.answer))}"`
+      : `✅ Kunci: ${item.q.answer}`;
 
     return `
       <div class="review-item ${status}" id="review-${renderIdx}" onclick="toggleReviewItem(${renderIdx})">
@@ -388,6 +411,7 @@ function applyReviewFilter() {
           <div class="review-q-info">
             <span class="review-q-sub badge badge-primary">${item.sub}</span>
             <span class="review-q-num">Soal ${item.idx + 1}</span>
+            ${isFillIn ? '<span style="background:rgba(249,115,22,0.15);color:#fb923c;padding:1px 6px;border-radius:4px;font-size:0.65rem;font-weight:700;margin-left:4px;">ISIAN</span>' : ''}
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span class="review-status-icon">${statusIcon}</span>
@@ -399,9 +423,9 @@ function applyReviewFilter() {
           ${item.q.passage ? `<div class="passage-block" style="max-height:150px;font-size:0.8rem;margin-bottom:12px;"><div class="passage-label">Teks Bacaan</div>${escapeHtml(item.q.passage).replace(/\n/g,'<br>')}</div>` : ''}
           <div class="review-answer-row">
             <div class="review-your-answer ${item.isCorrect ? 'correct-too' : ''}">
-              ${item.isUnanswered ? '⭕ Tidak Dijawab' : `Jawabanmu: ${item.given}`}
+              ${givenDisplay}
             </div>
-            <div class="review-correct-answer">✅ Kunci: ${item.q.answer}</div>
+            <div class="review-correct-answer">${correctDisplay}</div>
           </div>
           <div class="review-explanation">💡 ${escapeHtml(item.q.explanation || 'Lihat materi terkait untuk penjelasan lebih lanjut.')}</div>
         </div>
